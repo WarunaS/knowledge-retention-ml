@@ -1,0 +1,21 @@
+# data and artefacts live on Drive / HF Hub, not in git
+data/**
+!data/**/
+!data/**/.gitkeep
+models/**
+!models/.gitkeep
+results/**
+!results/.gitkeep
+
+# never commit own logs or secrets
+own_logs/
+.env
+*.key
+
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.DS_Store

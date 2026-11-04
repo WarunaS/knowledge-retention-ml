@@ -1,0 +1,5 @@
+run_id: B2
+model: minilm_lr
+purpose: Embedding baseline
+hypothesis: H1
+seed: 42

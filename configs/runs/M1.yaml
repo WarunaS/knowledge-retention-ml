@@ -1,0 +1,10 @@
+run_id: M1
+model: deberta_v3_small
+purpose: Main model
+hypothesis: H1, H2
+seed: 42
+with_context: true
+base_model: microsoft/deberta-v3-small
+epochs: 3
+lr: 3.0e-5
+batch_size: 16

@@ -1,0 +1,4 @@
+# Stage 6 - conversation-level split; test = gold only
+group_key: conversation_id
+val_frac: 0.1
+seed: 42

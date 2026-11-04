@@ -1,0 +1,5 @@
+run_id: T
+model: llm_zero_shot
+purpose: Teacher ceiling + cost/latency
+hypothesis: H2
+seed: 42

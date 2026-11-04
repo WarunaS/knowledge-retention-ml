@@ -1,0 +1,5 @@
+run_id: B0
+model: majority
+purpose: Floor
+hypothesis: -
+seed: 42

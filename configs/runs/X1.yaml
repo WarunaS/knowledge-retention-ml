@@ -1,0 +1,5 @@
+run_id: X1
+model: registered_final
+purpose: Transfer test on own logs (run once)
+hypothesis: RQ3
+seed: 42

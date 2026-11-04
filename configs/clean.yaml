@@ -1,0 +1,15 @@
+# Stage 3 - filters and segmentation
+language: en
+drop_toxic: true
+min_exchanges: 2
+exempt_agentic_from_min_exchanges: true
+relevance:
+  method: keywords+zero_shot
+  precision_check_sample: 200
+dedup:
+  minhash_num_perm: 128
+  threshold: 0.8
+segment:
+  context_pairs: 1
+  max_tokens: 512
+  tool_output_max_chars: 2000

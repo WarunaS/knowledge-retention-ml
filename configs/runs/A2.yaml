@@ -1,0 +1,6 @@
+run_id: A2
+model: deberta_v3_small
+purpose: Learning curve 1k/2k/5k/10k
+hypothesis: budget
+seed: 42
+train_sizes: [1000, 2000, 5000, 10000]

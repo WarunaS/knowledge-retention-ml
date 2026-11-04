@@ -1,0 +1,6 @@
+run_id: A1
+model: deberta_v3_small
+purpose: Ablation: no context turn
+hypothesis: H3
+seed: 42
+with_context: false

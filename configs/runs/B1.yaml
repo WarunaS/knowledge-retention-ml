@@ -1,0 +1,5 @@
+run_id: B1
+model: tfidf_lr
+purpose: Lexical baseline
+hypothesis: H1
+seed: 42

@@ -1,0 +1,12 @@
+# Stage 4b - weak labelling
+codebook_version: v1
+llm:
+  provider: TODO        # anthropic or openai
+  model: TODO
+  temperature: 0
+  n_segments: 10000
+noise_check_sample: 100
+gold:
+  n_segments: 400
+  stratify_by: [source_dataset, modality]
+  kappa_threshold: 0.6

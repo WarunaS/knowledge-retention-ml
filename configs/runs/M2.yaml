@@ -1,0 +1,5 @@
+run_id: M2
+model: setfit
+purpose: Labelling budget (50 gold/class)
+hypothesis: budget
+seed: 42

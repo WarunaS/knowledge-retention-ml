@@ -1,0 +1,13 @@
+# Stage 2 - which datasets to pull and how much (raise limits after a dry run)
+datasets:
+  wildchat:
+    hf_id: allenai/WildChat-1M     # check gating/licence on Hugging Face before first run
+    streaming: true
+    limit: 50000
+  devgpt:
+    snapshot_dir: raw/devgpt        # download snapshot from the DevGPT repository
+  trajectories:
+    - hf_id: TODO-swe-agent-trajectories
+      limit: 5000
+    - hf_id: TODO-openhands-trajectories
+      limit: 5000
