@@ -1,0 +1,10 @@
+# Template. Copy to own_logs/consent.yaml (gitignored) and fill in one entry per consenting member.
+# Use pseudonyms only - never real names. A member without consented_on is refused.
+members:
+  - author_id: p01
+    role: tech_lead            # software_engineer | tech_lead | architect | business_analyst | qa_engineer | data_scientist | other
+    consented_on: 2026-11-20   # date written consent was given
+    tool: claude_code
+    log_dir: ~/.claude/projects
+    include_projects: []       # Claude Code project folder names to read; empty = all
+    project_names: {}          # optional: folder name -> project id, e.g. {"-Users-me-orders": orders}

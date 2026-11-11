@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Implementation To-Do List</title>
+  <style>
+    :root {
+      --bg: #f5f7fb; --panel: #ffffff; --ink: #1f2937; --muted: #5a687a; --line: #dfe7f3;
+      --blue: #2d5bff; --green: #13a67f; --amber: #efaa3b; --red: #d85a5a;
+      --soft-blue: #edf3ff; --soft-green: #ebfaf5; --soft-amber: #fff4df;
+      --shadow: 0 12px 30px rgba(17,24,39,0.06);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: Arial, Helvetica, sans-serif; line-height: 1.6; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
+    .header { background: linear-gradient(135deg, #eef5ff, #f9fbff); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 24px 26px; margin-bottom: 22px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; }
+    .subtitle { margin: 0; color: var(--muted); }
+    .meta { margin-top: 10px; font-size: 0.9rem; color: var(--muted); }
+    .section { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 20px 22px; margin-bottom: 20px; }
+    h2 { margin: 0 0 10px; font-size: 1.3rem; }
+    p, li { color: var(--muted); }
+    .table-wrap { overflow-x: auto; }
+    table.tbl { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.95rem; }
+    .tbl th, .tbl td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+    .tbl th { background: #f6f9ff; color: var(--ink); }
+    .tbl td { color: var(--muted); }
+    .tbl td:first-child { color: var(--ink); font-weight: 700; white-space: nowrap; }
+    .tbl td.status { white-space: nowrap; text-align: center; }
+    .tbl tr.next td { background: var(--soft-blue); }
+    .tbl tr.optional td { font-style: italic; }
+    .add { color: var(--ink); font-weight: 700; }
+    .tag { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--blue); color: #fff; margin-left: 6px; vertical-align: middle; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 0.88rem; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    .card { border: 1px solid var(--line); border-radius: 14px; background: #fbfcff; padding: 14px 16px; }
+    .card h3 { margin: 0 0 8px; font-size: 1rem; }
+    .card ul { margin: 0; padding-left: 18px; }
+    .callout { margin-top: 12px; padding: 10px 14px; border-left: 5px solid var(--amber); border-radius: 10px; background: var(--soft-amber); color: var(--ink); font-size: 0.93rem; }
+    @media print { body { background: #fff; } .section, .header { box-shadow: none; } .section { break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Implementation To-Do List</h1>
+      <p class="subtitle">knowledge-retention-ml · code still to build, in ML lifecycle order</p>
+      <p class="meta">Updated 11 November 2026 · Matches plan v2.1 (research_project_plan, research_architecture_plan, research_technical_plan)</p>
+    </header>
+
+    <section class="section">
+      <h2>1. Code to build</h2>
+      <p>Done so far: <code>schema.py</code>, <code>label/taxonomy.py</code>, <code>config.py</code>, <code>io.py</code>, Stage 2 (Collect) and their tests. Rows marked ⬜ are still stubs.</p>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th style="width:22%">Stage</th><th>Files</th><th style="width:10%">Status</th></tr></thead>
+          <tbody>
+            <tr><td>2 Collect</td><td>wildchat, devgpt, trajectories, own_logs, manifest <span class="add">+ dataset IDs in config</span><br><small>Done 11 Nov: loaders, collect pipeline, pinned dataset versions, consent template, notebook 02, 26 offline tests; DevGPT checked on a real snapshot file. Live Hugging Face streaming check (<code>pytest -m network</code>) still running.</small></td><td class="status">✅</td></tr>
+            <tr class="next"><td>3 Clean</td><td>filters, dedup, normalise, segment, pipeline <span class="add">+ redact + precision-check sample</span></td><td class="status">⬜<span class="tag">next</span></td></tr>
+            <tr><td>4 Explore</td><td>explore.py</td><td class="status">⬜</td></tr>
+            <tr><td>4b Label</td><td>codebook definitions, llm_labeller, agreement <span class="add">+ gold tooling (export/import/adjudicate) + noise check + LLM in config</span></td><td class="status">⬜</td></tr>
+            <tr><td>6 Split</td><td>split.py</td><td class="status">⬜</td></tr>
+            <tr><td>5 Features</td><td>features.py</td><td class="status">⬜</td></tr>
+            <tr><td>7–8 Models</td><td>baselines, finetune, setfit_run, teacher <span class="add">(includes 10 Tune, ablations A1 and A2)</span></td><td class="status">⬜</td></tr>
+            <tr><td>9 Evaluate</td><td>metrics, stats</td><td class="status">⬜</td></tr>
+            <tr><td>11–12 Track/Register</td><td>tracking.py, registry.py <span class="add">(+ model card)</span></td><td class="status">⬜</td></tr>
+            <tr><td>14 Inference</td><td>inference.py</td><td class="status">⬜</td></tr>
+            <tr><td>Drift check (X1)</td><td>evaluate/transfer.py</td><td class="status">⬜</td></tr>
+            <tr><td>App</td><td>extraction, storage, retrieval, agent, mcp_server, handover</td><td class="status">⬜</td></tr>
+            <tr><td>App evaluation</td><td>retrieval eval (Recall@k, MRR), successor task</td><td class="status">⬜</td></tr>
+            <tr class="optional"><td>(optional)</td><td>Streamlit knowledge map</td><td class="status">⬜</td></tr>
+            <tr><td>Every stage</td><td>notebook filled in + tests <small>(Stage 2 done)</small></td><td class="status">🟨</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <span>⬜ to do</span><span>🟨 in progress</span><span>✅ done</span>
+        <span><span class="add">Bold</span> = items added after checking against plan v2.1</span>
+      </div>
+      <div class="callout">Order rules: remove duplicates before splitting · split by conversation before fitting any features · tune on the validation split only · report only on the gold set · run X1 once.</div>
+    </section>
+
+    <section class="section">
+      <h2>2. Not code, but needed</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Decisions and setup</h3>
+          <ul>
+            <li>Confirm sub-topic: M1 or M3</li>
+            <li>Supervisor sign-off on plan v2.1</li>
+            <li>Ethics approval (own logs, successor task)</li>
+            <li>Hugging Face account, WildChat licence, token</li>
+            <li>LLM API key and labelling budget</li>
+            <li>Find a second rater</li>
+            <li>Written consent from team members</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Work by hand</h3>
+          <ul>
+            <li>Label about 400 gold segments, two raters</li>
+            <li>Hand-check 200 filtered items and 100 LLM labels</li>
+            <li>Label 100–200 own-log segments for X1</li>
+            <li>Run the successor task with a few people</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Write-up</h3>
+          <ul>
+            <li>Results tables and plots</li>
+            <li>Report</li>
+            <li>Demo</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
