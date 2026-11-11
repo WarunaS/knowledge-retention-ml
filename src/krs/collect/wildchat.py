@@ -12,6 +12,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import Any
 
+from krs.collect._hf import iter_rows
 from krs.collect._util import build_turns, to_utc
 from krs.schema import Conversation, Modality, Role, SourceDataset
 
@@ -59,21 +60,13 @@ def load(
     limit: int | None = None,
     *,
     revision: str | None = None,
-    streaming: bool = True,
-    shuffle_buffer: int = 0,
+    random_row_groups: bool = True,
     seed: int = 42,
 ) -> Iterator[Conversation]:
-    """Stream Conversations from Hugging Face.
+    """Read Conversations from Hugging Face.
 
-    `revision` pins the dataset commit so the run is reproducible. `shuffle_buffer` > 0 takes an
-    approximately random sample instead of the first `limit` rows (which are ordered by time).
+    `revision` pins the dataset commit so the run is reproducible. `random_row_groups` samples
+    row groups across all files (seeded) instead of taking the first rows, which are ordered by time.
     """
-    from datasets import load_dataset
-
-    ds = load_dataset(HF_ID, split="train", streaming=streaming, revision=revision)
-    if shuffle_buffer:
-        ds = ds.shuffle(seed=seed, buffer_size=shuffle_buffer)
-    for i, row in enumerate(ds):
-        if limit is not None and i >= limit:
-            break
+    for row in iter_rows(HF_ID, revision, limit, random_row_groups=random_row_groups, seed=seed):
         yield to_conversation(row)

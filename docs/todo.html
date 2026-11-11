@@ -56,7 +56,7 @@
         <table class="tbl">
           <thead><tr><th style="width:22%">Stage</th><th>Files</th><th style="width:10%">Status</th></tr></thead>
           <tbody>
-            <tr><td>2 Collect</td><td>wildchat, devgpt, trajectories, own_logs, manifest <span class="add">+ dataset IDs in config</span><br><small>Done 11 Nov: loaders, collect pipeline, pinned dataset versions, consent template, notebook 02, 26 offline tests; DevGPT checked on a real snapshot file. Live Hugging Face streaming check (<code>pytest -m network</code>) still running.</small></td><td class="status">✅</td></tr>
+            <tr><td>2 Collect</td><td>wildchat, devgpt, trajectories, own_logs, manifest <span class="add">+ dataset IDs in config</span><br><small>Done 11 Nov: loaders, collect pipeline, pinned dataset versions, consent template, notebook 02. 26 offline tests + 3 live tests pass; end-to-end run on real data (WildChat, SWE-agent, OpenHands) and a real DevGPT snapshot file checked.</small></td><td class="status">✅</td></tr>
             <tr class="next"><td>3 Clean</td><td>filters, dedup, normalise, segment, pipeline <span class="add">+ redact + precision-check sample</span></td><td class="status">⬜<span class="tag">next</span></td></tr>
             <tr><td>4 Explore</td><td>explore.py</td><td class="status">⬜</td></tr>
             <tr><td>4b Label</td><td>codebook definitions, llm_labeller, agreement <span class="add">+ gold tooling (export/import/adjudicate) + noise check + LLM in config</span></td><td class="status">⬜</td></tr>

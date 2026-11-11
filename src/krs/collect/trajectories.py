@@ -18,6 +18,7 @@ import re
 from collections.abc import Iterator
 from typing import Any
 
+from krs.collect._hf import iter_rows
 from krs.collect._util import build_turns
 from krs.schema import Conversation, Modality, Role, SourceDataset
 
@@ -134,16 +135,10 @@ def load(
     limit: int | None = None,
     *,
     revision: str | None = None,
-    streaming: bool = True,
 ) -> Iterator[Conversation]:
-    """Stream Conversations for `dataset` ('swe_agent' or 'openhands') from Hugging Face."""
+    """Read Conversations for `dataset` ('swe_agent' or 'openhands') from Hugging Face, in file order."""
     if dataset not in HF_IDS:
         raise ValueError(f"unknown trajectory dataset {dataset!r}; expected one of {list(HF_IDS)}")
-    from datasets import load_dataset
-
     to_conversation = _MAPPERS[dataset]
-    ds = load_dataset(HF_IDS[dataset], split="train", streaming=streaming, revision=revision)
-    for i, row in enumerate(ds):
-        if limit is not None and i >= limit:
-            break
+    for row in iter_rows(HF_IDS[dataset], revision, limit):
         yield to_conversation(row)

@@ -6,9 +6,8 @@ datasets:
     hf_id: allenai/WildChat-1M
     revision: 7d6490e462285cf85d91eabea0f9a954fbddcd1f
     licence: ODC-BY-1.0
-    streaming: true
     limit: 50000            # of 837,989; most are not about programming, Stage 3 filters
-    shuffle_buffer: 10000   # approximate random sample instead of the first rows by time
+    random_row_groups: true # seeded sample of row groups across all 14 files, not the first rows by time
     seed: 42
   devgpt:
     url: https://zenodo.org/records/10086809/files/DevGPT.zip?download=1   # ~680 MB, downloaded once
@@ -19,13 +18,11 @@ datasets:
     hf_id: nebius/SWE-agent-trajectories
     revision: 68195a1450865274106246d0d0296a1d6807b88e
     licence: CC-BY-4.0
-    streaming: true
     limit: 5000             # of 80,036
   openhands:
     hf_id: nebius/SWE-rebench-openhands-trajectories
     revision: 35455389ab51bf5e2306bfd436ef72d0f98bf882
     licence: CC-BY-4.0
-    streaming: true
     limit: 5000
 
 # Own logs are NOT collected here. Run krs.collect.pipeline.run_own_logs locally with
