@@ -67,7 +67,7 @@
     <header class="header">
       <h1>Detailed Technical Plan</h1>
       <p class="subtitle">AI Knowledge Retention Agent – Python-first research prototype: data preparation, two-axis labelling, classifier training and evaluation, then knowledge extraction, retrieval and reuse</p>
-      <p class="meta">Version 2 · Revised 13 October 2026 · Companion documents: Research Plan, Detailed Architecture Plan</p>
+      <p class="meta">Version 2.1 · Revised 11 November 2026 · Companion documents: Research Plan, Detailed Architecture Plan · Code: knowledge-retention-ml</p>
     </header>
 
     <section class="section">
@@ -85,8 +85,10 @@
         <li>training and comparison of classifiers against baselines, with ablations and significance tests</li>
         <li>a transfer test of the trained model on consented agentic development logs</li>
         <li>knowledge extraction, storage, semantic retrieval and agent delivery</li>
+        <li>handover packs per person and per project, built from stored cards</li>
         <li>evaluation of classification, retrieval and successor usefulness</li>
       </ul>
+      <p>The work is organised along the ML project lifecycle (Research Plan, section 5): one code module and one notebook per stage, run on Colab, with deployment, monitoring and retraining out of scope.</p>
     </section>
 
     <section class="section">
@@ -185,13 +187,14 @@
             <li>Accept licences and download WildChat-1M, DevGPT and agent trajectory datasets</li>
             <li>Write a manifest with dataset version, date, licence and row counts</li>
             <li>One loader per dataset emitting the shared Conversation schema</li>
+            <li>Fill author, role, project and date where the source provides them; project from the linked repository</li>
           </ul>
         </div>
         <div class="card">
           <h3>4.2 Filtering</h3>
           <ul>
             <li>English only, toxicity flag false, at least two user–assistant exchanges</li>
-            <li>Technical relevance: zero-shot classifier seeded with keywords; hand-check two hundred items and report precision</li>
+            <li>Relevance: zero-shot classifier seeded with programming and requirements keywords; hand-check two hundred items and report precision</li>
             <li>Keep agentic trajectories regardless of turn count since they are all technical</li>
           </ul>
         </div>
@@ -247,7 +250,7 @@
           <h3>4.9 Storage and retrieval</h3>
           <ul>
             <li>SQLite for cards, labels, provenance and consent records</li>
-            <li>ChromaDB or FAISS for card embeddings; retrieval filtered by domain and knowledge type</li>
+            <li>ChromaDB or FAISS for card embeddings; retrieval filtered by domain, knowledge type, person, role and project</li>
             <li>NetworkX graph of problem → decision → tool → domain edges with optional one-hop expansion</li>
           </ul>
         </div>
@@ -257,6 +260,7 @@
             <li>Accept a question, retrieve cards, answer with citations to cards and source turns</li>
             <li>FastAPI REST endpoints for ingestion, classification, retrieval and query</li>
             <li>MCP server exposing a query tool so a successor asks from their own AI client</li>
+            <li>Handover pack generator: decision log in date order, procedures, domain notes, context and constraints, per person or project</li>
           </ul>
         </div>
         <div class="card">
@@ -300,7 +304,7 @@
         <div class="tech"><strong>LLM for extraction and answers</strong>Cloud API by default; local model via Hugging Face as fallback</div>
         <div class="tech"><strong>Faithfulness</strong>ragas, or an NLI entailment model</div>
         <div class="tech"><strong>API and delivery</strong>FastAPI, Uvicorn, MCP Python SDK</div>
-        <div class="tech"><strong>Visualisation</strong>matplotlib, seaborn; Streamlit optional for a demo page</div>
+        <div class="tech"><strong>Visualisation</strong>matplotlib, seaborn; Streamlit optional for a knowledge map (coverage and single-person dependency, no ranking of individuals)</div>
         <div class="tech"><strong>Dev tooling</strong>Jupyter, VS Code, Git and GitHub</div>
       </div>
     </section>
@@ -310,13 +314,13 @@
       <table class="tbl">
         <thead><tr><th style="width:20%">Source</th><th>What it contains</th><th>Role</th><th style="width:26%">Filtering</th></tr></thead>
         <tbody>
-          <tr><td>WildChat-1M</td><td>Real ChatGPT conversations with GPT-3.5 and GPT-4, language and toxicity metadata</td><td>Main training pool, conversational modality</td><td>English, non-toxic, two or more exchanges, programming relevance</td></tr>
-          <tr><td>DevGPT</td><td>ChatGPT conversations shared by developers in GitHub artefacts and Hacker News, with repository links</td><td>Training pool with free weak domain labels from repository language and topics</td><td>English, remove duplicate shares</td></tr>
-          <tr><td>SWE-agent and OpenHands trajectories</td><td>Agent runs on real repositories with tool calls, edits and test runs</td><td>Agentic modality; richest source of decision and procedural knowledge</td><td>Completed runs only; collapse long tool outputs</td></tr>
-          <tr><td>Own consented logs</td><td>Team members' Claude Code, Cursor or Copilot sessions</td><td>Transfer test only</td><td>Consent, redaction, hand labels</td></tr>
+          <tr><td>WildChat-1M</td><td>Real ChatGPT conversations with GPT-3.5 and GPT-4, language and toxicity metadata</td><td>Main training pool, conversational modality</td><td>English, non-toxic, two or more exchanges, programming or requirements relevance</td></tr>
+          <tr><td>DevGPT</td><td>ChatGPT conversations shared by developers in GitHub artefacts and Hacker News, with repository links</td><td>Training pool with free weak domain labels from repository language and topics; the repository gives a project id</td><td>English, remove duplicate shares</td></tr>
+          <tr><td>SWE-agent and OpenHands trajectories</td><td>Agent runs on real repositories with tool calls, edits and test runs</td><td>Agentic modality; richest source of decision and procedural knowledge; the repository gives a project id</td><td>Completed runs only; collapse long tool outputs</td></tr>
+          <tr><td>Own consented logs</td><td>Team members' Claude Code, Cursor or Copilot sessions</td><td>Transfer test; person-level demonstration with local extraction only</td><td>Consent, redaction, hand labels</td></tr>
         </tbody>
       </table>
-      <div class="callout warn">Public chatbot logs are a proxy for workplace logs. The report states this and uses the transfer test to measure the gap.</div>
+      <div class="callout warn">Public chatbot logs are a proxy for workplace logs. The report states this and uses the transfer test to measure the gap. Public corpora support a project view but not a person view; person-level demonstrations use consented logs or clearly labelled synthetic personas.</div>
     </section>
 
     <section class="section">
@@ -325,7 +329,8 @@
         <div class="card">
           <h3>Taxonomy</h3>
           <ul>
-            <li><strong>Domain, multi-label:</strong> mobile · web frontend · backend and APIs · data and analytics · cloud and infrastructure · DevOps and CI/CD · security · QA and testing · architecture and design · other</li>
+            <li><strong>Domain, multi-label:</strong> mobile · web frontend · backend and APIs · data and analytics · cloud and infrastructure · DevOps and CI/CD · security · QA and testing · architecture and design · business and requirements · other</li>
+            <li><strong>Not labels:</strong> person, role and project are recorded at ingestion and never predicted</li>
             <li><strong>Knowledge type, multi-label:</strong> domain · procedural · decision · contextual · none</li>
           </ul>
         </div>
@@ -377,34 +382,56 @@
 
     <section class="section">
       <h2>9. Data Schemas</h2>
-      <h3>9.1 Segment and label record</h3>
+      <p>Defined in <code>src/krs/schema.py</code> and stored as JSON Lines between stages. Segments and labels are separate records so that one segment can hold an LLM label and several human labels.</p>
+      <h3>9.1 Shared provenance fields (Conversation, Segment, Knowledge card)</h3>
+      <table class="tbl">
+        <thead><tr><th style="width:24%">Field</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>author_id</td><td>Pseudonymous id of the person; empty for public corpora</td></tr>
+          <tr><td>role</td><td>Software engineer, tech lead, architect, business analyst, QA engineer, data scientist or other; from the team directory</td></tr>
+          <tr><td>project_id</td><td>Project or repository the work belongs to</td></tr>
+          <tr><td>occurred_at</td><td>When the conversation happened, so decisions can be put in order</td></tr>
+        </tbody>
+      </table>
+      <h3 style="margin-top:18px">9.2 Segment record</h3>
       <table class="tbl">
         <thead><tr><th style="width:24%">Field</th><th>Purpose</th></tr></thead>
         <tbody>
           <tr><td>segment_id</td><td>Stable identifier for the unit of labelling and classification</td></tr>
           <tr><td>conversation_id</td><td>Source conversation; splits are made on this key</td></tr>
-          <tr><td>source_dataset</td><td>WildChat, DevGPT, trajectory dataset or own logs</td></tr>
+          <tr><td>source_dataset</td><td>WildChat, DevGPT, SWE-agent, OpenHands or own logs</td></tr>
           <tr><td>modality</td><td>conversational or agentic</td></tr>
           <tr><td>turn_span</td><td>Turn indices covered, including the context turn</td></tr>
-          <tr><td>text</td><td>Normalised segment text as presented to the model</td></tr>
-          <tr><td>domain_labels</td><td>Multi-label domain tags</td></tr>
-          <tr><td>knowledge_type_labels</td><td>Multi-label knowledge-type tags</td></tr>
-          <tr><td>label_source</td><td>llm, human_rater_1, human_rater_2 or adjudicated</td></tr>
+          <tr><td>context_text</td><td>The preceding pair; dropped for ablation A1</td></tr>
+          <tr><td>text</td><td>Normalised user–assistant pair being classified</td></tr>
           <tr><td>split</td><td>train, validation, test or transfer</td></tr>
         </tbody>
       </table>
-      <h3 style="margin-top:18px">9.2 Knowledge card</h3>
+      <h3 style="margin-top:18px">9.3 Label record</h3>
+      <table class="tbl">
+        <thead><tr><th style="width:24%">Field</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>segment_id</td><td>Segment the label belongs to</td></tr>
+          <tr><td>domains</td><td>Multi-label domain tags</td></tr>
+          <tr><td>knowledge_types</td><td>Multi-label knowledge-type tags; none cannot be combined with another type</td></tr>
+          <tr><td>source</td><td>llm, repo_metadata, human_rater_1, human_rater_2 or adjudicated</td></tr>
+          <tr><td>codebook_version</td><td>Codebook used, so relabelling after a revision is traceable</td></tr>
+          <tr><td>raw_response</td><td>LLM output kept for audit</td></tr>
+        </tbody>
+      </table>
+      <h3 style="margin-top:18px">9.4 Knowledge card</h3>
       <table class="tbl">
         <thead><tr><th style="width:24%">Field</th><th>Purpose</th></tr></thead>
         <tbody>
           <tr><td>card_id</td><td>Unique identifier for the knowledge card</td></tr>
           <tr><td>source_segment_ids</td><td>Provenance back to segments and therefore to turns; mandatory</td></tr>
           <tr><td>conversation_id</td><td>Source conversation</td></tr>
+          <tr><td>author_id, role, project_id, occurred_at</td><td>Shared provenance fields (9.1); drive person, role and project filters and the order of the decision log</td></tr>
           <tr><td>domains</td><td>Domain labels inherited from the classifier</td></tr>
           <tr><td>knowledge_types</td><td>Knowledge-type labels inherited from the classifier</td></tr>
           <tr><td>title</td><td>Short label for the knowledge item</td></tr>
           <tr><td>summary</td><td>Externalised explicit form of the decision, procedure, fact or context</td></tr>
-          <tr><td>decision</td><td>For decision cards: what was chosen over what, and why</td></tr>
+          <tr><td>decision</td><td>For decision cards: what was chosen over what, and why; required when the card is a decision</td></tr>
           <tr><td>tools_involved</td><td>Languages, frameworks, services or agent tools mentioned</td></tr>
           <tr><td>evidence</td><td>Quoted span from the source that grounds the summary</td></tr>
           <tr><td>confidence</td><td>Classifier probability for the knowledge-bearing flag</td></tr>
@@ -436,18 +463,18 @@
           <tr>
             <td>3</td>
             <td>Fine-tune M1 on Colab. SetFit M2. Teacher run T with cost and latency. Ablations A1 and A2.</td>
-            <td>Classification service loads registered model. Retrieval with label filters. NetworkX graph. Agent with citations. MCP tool.</td>
+            <td>Classification service loads registered model. Retrieval with label, person, role and project filters. NetworkX graph. Agent with citations. MCP tool.</td>
             <td>Registered model; end-to-end query works</td>
           </tr>
           <tr>
             <td>4</td>
             <td>Transfer test X1 on consented logs. Error analysis, confusion matrices, confidence intervals, plots. Results write-up.</td>
-            <td>Integration run on the full filtered corpus. Retrieval evaluation. Successor task with a few participants. Demo and documentation.</td>
+            <td>Integration run on the full filtered corpus. Handover packs per project and per person. Retrieval evaluation. Successor task with a few participants. Demo and documentation.</td>
             <td>Results tables; demo; report draft</td>
           </tr>
         </tbody>
       </table>
-      <div class="callout">Protected if time runs short: gold set and κ, baselines, M1, transfer test. First to scale down: successor task, graph expansion, Streamlit page.</div>
+      <div class="callout">Protected if time runs short: gold set and κ, baselines, M1, transfer test. First to scale down: successor task, graph expansion, Streamlit knowledge map.</div>
     </section>
 
     <section class="section">
@@ -509,7 +536,9 @@
           <tr><td>Gated datasets or licence issues</td><td>L</td><td>H</td><td>Accept licences in week one; LMSYS-Chat-1M as a fallback corpus</td></tr>
           <tr><td>Fine-tuning compute unavailable</td><td>L</td><td>M</td><td>Free Colab GPU; SetFit and embedding baselines run on CPU</td></tr>
           <tr><td>Extraction produces unfaithful cards</td><td>M</td><td>H</td><td>Mandatory evidence span; faithfulness check; reject ungrounded cards</td></tr>
-          <tr><td>Scope creep into graph, MCP and dashboard</td><td>M</td><td>H</td><td>Thin implementations; modelling stream protected in the plan</td></tr>
+          <tr><td>Business and requirements label is rare in developer corpora</td><td>H</td><td>M</td><td>Keep requirements conversations in the relevance filter; targeted sampling; report its scores separately; merge into other if support is too small, and say so</td></tr>
+          <tr><td>Public corpora cannot show a person view</td><td>H</td><td>L</td><td>Project view from repository links; person view from consented logs or clearly labelled synthetic personas</td></tr>
+          <tr><td>Scope creep into graph, MCP and knowledge map</td><td>M</td><td>H</td><td>Thin implementations; knowledge map optional; modelling stream protected in the plan</td></tr>
           <tr><td>Privacy exposure from own logs</td><td>L</td><td>H</td><td>Written consent; redaction; local processing only; deletion after the study</td></tr>
         </tbody>
       </table>
@@ -525,39 +554,41 @@
         <li>Results tables, learning curve, confusion matrices and error analysis</li>
         <li>Transfer-test report on consented agentic logs</li>
         <li>Knowledge extraction pipeline and card store with provenance</li>
-        <li>Retrieval service and AI agent with REST and MCP delivery</li>
+        <li>Retrieval service and ask-predecessor agent with REST and MCP delivery, filterable by person, role and project</li>
+        <li>Handover packs per person and per project</li>
         <li>Evaluation report covering classification, retrieval and successor usefulness</li>
+        <li>Optional: knowledge map of coverage and single-person dependency, with no ranking of individuals</li>
       </ul>
       <div class="callout">The research claim rests on the classifier results and the transfer test. The agent is the demonstration of how those results are used.</div>
     </section>
 
     <section class="section">
-      <h2>14. Suggested Folder Structure</h2>
-      <div class="folder">project/
-├── data/
-│   ├── raw/              immutable downloads + manifest.json
-│   ├── filtered/
-│   ├── segments/
-│   └── labels/           weak.jsonl, gold_rater1.csv, gold_rater2.csv, gold_adjudicated.csv
-├── src/
+      <h2>14. Repository Structure</h2>
+      <p>Repository <code>knowledge-retention-ml</code>, Python package <code>krs</code>. Folders follow the ML lifecycle stages; notebooks are thin Colab runners and all logic lives in the package.</p>
+      <div class="folder">knowledge-retention-ml/
+├── docs/                 01_problem.md (stage 1), lifecycle.md (stage → code → notebook)
+├── src/krs/
 │   ├── schema.py         Conversation, Turn, Segment, Label, Prediction, KnowledgeCard
-│   ├── loaders/          wildchat.py, devgpt.py, trajectories.py, own_logs.py
-│   ├── filtering.py
-│   ├── preprocessing.py  dedup, normalise, segment
-│   ├── eda.py
-│   ├── labelling/        codebook.md, llm_labeller.py, agreement.py
-│   ├── modelling/        baselines.py, finetune.py, setfit_run.py, ablations.py, registry.py
-│   ├── classify.py       classification service
-│   ├── extraction.py
-│   ├── storage.py        sqlite + chroma + networkx
-│   ├── retrieval.py
-│   ├── agent.py          FastAPI app
-│   ├── mcp_server.py
-│   └── evaluate/         classification.py, transfer.py, retrieval.py, successor_task.py
-├── configs/              one YAML per experiment run (B0 … X1)
-├── models/               registered versions: weights, config, metrics.json, model_card.md
-├── notebooks/            eda.ipynb, results.ipynb
-├── results/              per-run metrics, plots, tables
+│   ├── config.py, io.py  paths (local or Google Drive), YAML configs, JSON Lines
+│   ├── collect/          stage 2: wildchat, devgpt, trajectories, own_logs, manifest
+│   ├── clean/            stage 3: filters, dedup, normalise, segment, pipeline
+│   ├── explore.py        stage 4
+│   ├── label/            stage 4b: taxonomy, codebook.md, llm_labeller, agreement
+│   ├── split.py          stage 6 (before features)
+│   ├── features.py       stage 5
+│   ├── models/           stages 7–8: baselines, finetune, setfit_run, teacher
+│   ├── evaluate/         stage 9 and X1: metrics, stats, transfer
+│   ├── tracking.py       stage 11
+│   ├── registry.py       stage 12
+│   ├── inference.py      stage 14: offline batch scoring
+│   └── app/              extraction, storage, retrieval, agent, mcp_server, handover
+├── configs/              collect, clean, label, split + runs/B0 … X1
+├── notebooks/            02_collect, 03_clean, 04_explore, 05_label, 06_split,
+│                         07_features_baselines, 08_train, 09_evaluate,
+│                         12_register, 14_inference, 16_transfer_test
+├── data/                 raw, filtered, segments, labels, splits (not in git)
+├── models/               registered versions with model cards (not in git)
+├── results/              per-run metrics, plots, tables (not in git)
 ├── tests/
 ├── README.md
 └── pyproject.toml</div>

@@ -64,7 +64,7 @@
     <header class="header">
       <h1>AI Knowledge Retention System</h1>
       <p class="subtitle">Research plan: learning to identify and classify organisational knowledge in developer–AI conversations, and reusing it through a retrieval agent</p>
-      <p class="meta">Version 2 · Revised 13 October 2026 · Companion documents: Detailed Architecture Plan, Detailed Technical Plan</p>
+      <p class="meta">Version 2.1 · Revised 11 November 2026 · Companion documents: Detailed Architecture Plan, Detailed Technical Plan · Code: knowledge-retention-ml</p>
     </header>
 
     <section class="section">
@@ -73,6 +73,10 @@
         To design, train and evaluate a classifier that identifies knowledge-bearing segments in developer–LLM conversations and labels them
         on two axes, technical domain and knowledge type, and then to demonstrate that the extracted knowledge can be reused by a successor
         through a retrieval agent. The project treats the trained model as the research contribution and the retrieval agent as the application that consumes it.
+      </p>
+      <p>
+        The practical goal: when a software engineer, tech lead, architect, business analyst, QA engineer or data scientist leaves, a successor can
+        still find out what that person knew about the project and why its decisions were made, by asking questions and reading a generated handover pack.
       </p>
       <div class="grid">
         <div class="card">
@@ -184,9 +188,11 @@
             <div class="row">
               <div class="box b3">Knowledge extraction<small>LLM → knowledge cards</small></div>
               <div class="arrow">→</div>
-              <div class="box b4">Knowledge store<small>vector index + lightweight graph</small></div>
+              <div class="box b4">Knowledge store<small>vector index + lightweight graph · tagged by person, role, project</small></div>
               <div class="arrow">→</div>
-              <div class="box b5">AI Knowledge Retention Agent<small>API + MCP delivery</small></div>
+              <div class="box b5">Ask-predecessor agent<small>API + MCP · cited answers</small></div>
+              <div class="arrow">→</div>
+              <div class="box b3">Handover packs<small>per person · per project</small></div>
               <div class="arrow">→</div>
               <div class="box b2">Evaluation<small>retrieval metrics · successor task</small></div>
             </div>
@@ -250,9 +256,10 @@
         <div class="card">
           <h3>7. Retrieval and agent layer</h3>
           <ul>
-            <li>Semantic retrieval filtered by domain and knowledge type</li>
+            <li>Semantic retrieval filtered by domain, knowledge type, person, role and project</li>
             <li>Grounded answers with citations to cards and source turns</li>
             <li>Delivery through an API and an MCP tool so a successor can ask instead of search</li>
+            <li>Handover packs generated per person and per project from the stored cards</li>
           </ul>
         </div>
         <div class="card">
@@ -267,15 +274,38 @@
     </section>
 
     <section class="section">
-      <h2>5. Two-Axis Knowledge Taxonomy</h2>
+      <h2>5. Delivery Method: the ML Project Lifecycle</h2>
+      <p>The implementation follows the standard machine-learning project lifecycle (Lecture 2), adapted in two places for this project. Each stage has its own module and notebook in the code repository.</p>
+      <table class="tbl">
+        <thead><tr><th style="width:26%">Lifecycle stage</th><th>In this project</th></tr></thead>
+        <tbody>
+          <tr><td>1. Define problem</td><td>RQ1–RQ4, H1–H3; success is macro-F1 per axis on the human gold set</td></tr>
+          <tr><td>2. Collect data</td><td>WildChat-1M, DevGPT, SWE-agent and OpenHands trajectories, with a dataset manifest</td></tr>
+          <tr><td>3. Clean / prepare</td><td>Language, toxicity, turn-count and relevance filters; near-duplicate removal; normalisation; segmentation</td></tr>
+          <tr><td>4. Explore</td><td>Distributions, topic clusters, share of knowledge-bearing segments</td></tr>
+          <tr><td>4b. Label (added)</td><td>Codebook, LLM weak labels, human gold set with Cohen's κ. Public corpora carry no labels, so this stage is created</td></tr>
+          <tr><td>6. Split (moved earlier)</td><td>By conversation, before any feature is fitted, so the test set cannot influence training features</td></tr>
+          <tr><td>5. Feature engineering</td><td>TF-IDF, sentence embeddings, tokenisation with and without the context turn; fitted on the training split only</td></tr>
+          <tr><td>7–8. Choose and train</td><td>Baselines B0–B2, fine-tuned M1, SetFit M2, teacher T</td></tr>
+          <tr><td>9–10. Evaluate and tune</td><td>Tune on the weak-label validation split; report only on the gold set</td></tr>
+          <tr><td>11–12. Track and register</td><td>Config and metrics per run; registered model with a model card</td></tr>
+          <tr><td>13. Deploy</td><td>Out of scope</td></tr>
+          <tr><td>14. Inference</td><td>Offline batch scoring of segments, feeding knowledge extraction</td></tr>
+          <tr><td>15–18. Monitor, drift, retrain</td><td>Out of scope, except the transfer test X1, which measures the shift from public to real agentic logs once</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>6. Two-Axis Knowledge Taxonomy</h2>
       <p>Every segment receives labels on both axes. Both axes are multi-label because one segment can carry, for example, a backend decision that is also a security procedure.</p>
       <table class="tbl">
         <thead><tr><th style="width:28%">Axis</th><th>Labels</th><th style="width:34%">Purpose</th></tr></thead>
         <tbody>
           <tr>
             <td>Technical domain</td>
-            <td>Mobile · Web frontend · Backend and APIs · Data and analytics · Cloud and infrastructure · DevOps and CI/CD · Security · QA and testing · Architecture and design · Other or general</td>
-            <td>Routes knowledge to the right successor and gives per-domain coverage profiles. Justified from Stack Overflow Developer Survey role and tag categories.</td>
+            <td>Mobile · Web frontend · Backend and APIs · Data and analytics · Cloud and infrastructure · DevOps and CI/CD · Security · QA and testing · Architecture and design · Business and requirements · Other or general</td>
+            <td>Routes knowledge to the right successor and gives per-domain coverage profiles. Technical labels follow Stack Overflow Developer Survey role and tag categories; Business and requirements covers business analyst knowledge such as requirements, business rules and stakeholder decisions.</td>
           </tr>
           <tr>
             <td>Knowledge type</td>
@@ -284,10 +314,74 @@
           </tr>
         </tbody>
       </table>
+      <div class="callout warn">Business and requirements is expected to be rare in public developer corpora, so its scores may be weak and are reported with that caveat. Person, role and project are not labels: they are recorded alongside the logs, not predicted (section 8).</div>
     </section>
 
     <section class="section">
-      <h2>6. Research Method and Data Sources</h2>
+      <h2>7. What the Successor Receives</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Ask-predecessor agent</h3>
+          <ul>
+            <li>The successor asks a question from their own AI client through MCP, or from a web page</li>
+            <li>The answer is built only from stored knowledge cards and cites each card and its source conversation turns</li>
+            <li>Questions can be narrowed to a project, a person, a role, a domain or a knowledge type</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Handover pack</h3>
+          <ul>
+            <li>Generated per person and per project from the stored cards</li>
+            <li>Decision log in date order, procedures, domain notes, context and constraints</li>
+            <li>Every entry links back to its source</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout">Example. Q (new tech lead): Why did we pick PostgreSQL instead of MongoDB for the orders service? A: The previous tech lead chose PostgreSQL because orders need multi-table transactions that the reconciliation job relies on; MongoDB was rejected for its transaction behaviour under the team's sharding setup. [Decision card · session date · turns] Related: the migration procedure and a known read-replica lag constraint.</div>
+      <table class="tbl">
+        <thead><tr><th style="width:26%">Handover pack section</th><th>Built from</th><th style="width:40%">Example entry</th></tr></thead>
+        <tbody>
+          <tr><td>Decision log</td><td>Decision cards, in date order</td><td>Chose Redis over Memcached for sessions, and why</td></tr>
+          <tr><td>Procedures</td><td>Procedural cards</td><td>How to rotate the payment API key</td></tr>
+          <tr><td>Domain notes</td><td>Domain cards</td><td>How the pricing engine rounds tax</td></tr>
+          <tr><td>Context and constraints</td><td>Contextual cards</td><td>A client requires data to stay in the EU</td></tr>
+        </tbody>
+      </table>
+      <p>An optional knowledge map may show coverage by domain and knowledge type, and areas that depend on a single person. Individuals are never ranked or scored.</p>
+    </section>
+
+    <section class="section">
+      <h2>8. Roles, People and Projects</h2>
+      <p>
+        One classifier is trained on all the data. It decides what knowledge a segment holds and does not need to know who wrote it.
+        Person, role and project are recorded when logs are ingested, from the team directory and the repository, carried onto every knowledge card,
+        and used as retrieval filters. No model is trained per person or per role.
+      </p>
+      <table class="tbl">
+        <thead><tr><th style="width:26%">Concern</th><th>A model fine-tuned per person</th><th>One classifier plus tagged cards (chosen)</th></tr></thead>
+        <tbody>
+          <tr><td>Training data</td><td>One person's logs are far too small</td><td>Trained once on all public data</td></tr>
+          <tr><td>Trust</td><td>Answers in the person's style but cannot cite a source, so it can invent</td><td>Every answer cites its card and source turns</td></tr>
+          <tr><td>Erasure (GDPR)</td><td>Removing a person means retraining</td><td>Delete that person's cards</td></tr>
+          <tr><td>Ethics</td><td>Imitates a former employee</td><td>Records decisions; does not imitate anyone</td></tr>
+          <tr><td>New leaver</td><td>A new model each time</td><td>Works immediately</td></tr>
+        </tbody>
+      </table>
+      <table class="tbl">
+        <thead><tr><th style="width:26%">Role</th><th>Knowledge mostly left behind</th><th style="width:40%">Typical domain labels</th></tr></thead>
+        <tbody>
+          <tr><td>Software engineer</td><td>Procedures, domain facts</td><td>Backend, web frontend, mobile</td></tr>
+          <tr><td>Tech lead</td><td>Decisions, context</td><td>Architecture and design, backend</td></tr>
+          <tr><td>Architect</td><td>Decisions and trade-offs</td><td>Architecture and design, cloud</td></tr>
+          <tr><td>Business analyst</td><td>Context, decisions</td><td>Business and requirements</td></tr>
+          <tr><td>QA engineer</td><td>Procedures</td><td>QA and testing</td></tr>
+          <tr><td>Data scientist</td><td>Domain facts, procedures</td><td>Data and analytics</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>9. Research Method and Data Sources</h2>
       <div class="grid">
         <div class="card">
           <h3>Primary data: public developer–LLM corpora</h3>
@@ -303,6 +397,14 @@
             <li>A small sample of the team's own Claude Code, Cursor or Copilot logs, used with written consent of each member</li>
             <li>Hand-labelled, between one and two hundred segments</li>
             <li>Used only to test the public-trained model, never for training</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Project and person views</h3>
+          <ul>
+            <li>Project view: DevGPT conversations link to GitHub repositories and agent runs belong to a repository, so public data can be grouped by project</li>
+            <li>Person view: public corpora do not follow one person over time, and no attempt is made to identify users in them</li>
+            <li>Person-level demonstrations use consented team logs, or invented personas clearly labelled as synthetic</li>
           </ul>
         </div>
         <div class="card">
@@ -328,7 +430,7 @@
     </section>
 
     <section class="section">
-      <h2>7. Evaluation Summary</h2>
+      <h2>10. Evaluation Summary</h2>
       <table class="tbl">
         <thead><tr><th style="width:26%">Component</th><th>Measure</th><th style="width:30%">Answers</th></tr></thead>
         <tbody>
@@ -344,17 +446,18 @@
     </section>
 
     <section class="section">
-      <h2>8. Recommended Scope for the Research Project</h2>
+      <h2>11. Recommended Scope for the Research Project</h2>
       <p>
         The project delivers a trained and evaluated knowledge classifier as its research contribution, wrapped in a focused prototype pipeline:
-        filtering, labelling, modelling, extraction, storage, retrieval and a lightweight agent interface. The knowledge graph remains lightweight,
-        MCP delivery is a thin layer over the retrieval service, and a dashboard is optional. Live capture of developer logs is documented as future work.
+        filtering, labelling, modelling, extraction, storage, retrieval, a lightweight agent interface and generated handover packs. The knowledge graph remains lightweight,
+        MCP delivery is a thin layer over the retrieval service, and a knowledge map is optional and never ranks individuals. Deployment, monitoring and
+        live capture of developer logs are documented as future work.
       </p>
       <div class="callout">If time runs short, the classification experiment, the agreement study and the transfer test are protected. The successor task and the graph layer are the first things to scale down, and the report says so explicitly.</div>
     </section>
 
     <section class="section">
-      <h2>9. References</h2>
+      <h2>12. References</h2>
       <ol class="refs">
         <li>Anthropic (2024) <em>Introducing the Model Context Protocol</em>. Available at: https://modelcontextprotocol.io/ (Accessed: 13 October 2026).</li>
         <li>Cohen, J. (1960) 'A coefficient of agreement for nominal scales', <em>Educational and Psychological Measurement</em>, 20(1), pp. 37–46.</li>
