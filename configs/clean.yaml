@@ -5,6 +5,7 @@ min_exchanges: 2
 exempt_agentic_from_min_exchanges: true
 relevance:
   method: keywords+zero_shot
+  keep: [programming, requirements]   # requirements keeps business-analyst conversations
   precision_check_sample: 200
 dedup:
   minhash_num_perm: 128

@@ -61,6 +61,31 @@ class Split(str, Enum):
     TRANSFER = "transfer"  # consented own logs, scored once
 
 
+class PersonRole(str, Enum):
+    """Job role of the person behind a conversation. Recorded from the team directory, never predicted."""
+
+    SOFTWARE_ENGINEER = "software_engineer"
+    TECH_LEAD = "tech_lead"
+    ARCHITECT = "architect"
+    BUSINESS_ANALYST = "business_analyst"
+    QA_ENGINEER = "qa_engineer"
+    DATA_SCIENTIST = "data_scientist"
+    OTHER = "other"
+
+
+class WorkContext(BaseModel):
+    """Who, which project and when. Carried from Conversation to Segment to KnowledgeCard.
+
+    Used as retrieval filters and to order the decision log in handover packs. All optional:
+    public corpora usually have a project (repository) but no person.
+    """
+
+    author_id: str | None = None  # pseudonymous; never a real name
+    role: PersonRole | None = None
+    project_id: str | None = None  # e.g. repository "owner/name"
+    occurred_at: datetime | None = None
+
+
 # --------------------------------------------------------------------------- stage 2: collect
 
 
@@ -71,7 +96,7 @@ class Turn(BaseModel):
     tool_name: str | None = None
 
 
-class Conversation(BaseModel):
+class Conversation(WorkContext):
     """One full dialogue or agent run, as emitted by a loader. Loaders never filter."""
 
     conversation_id: str
@@ -94,7 +119,7 @@ class Conversation(BaseModel):
 # --------------------------------------------------------------------------- stage 3: clean
 
 
-class Segment(BaseModel):
+class Segment(WorkContext):
     """Unit of labelling and classification: one user-assistant pair plus one preceding pair.
 
     The context pair is kept separate from the target pair so ablation A1 (no context)
@@ -157,7 +182,7 @@ class Prediction(BaseModel):
 # --------------------------------------------------------------------------- application plane
 
 
-class KnowledgeCard(BaseModel):
+class KnowledgeCard(WorkContext):
     """Typed, grounded summary of knowledge from flagged segments. Provenance is mandatory."""
 
     card_id: str

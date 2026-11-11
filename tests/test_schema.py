@@ -9,6 +9,7 @@ from krs.schema import (
     Label,
     LabelSource,
     Modality,
+    PersonRole,
     Role,
     Segment,
     SourceDataset,
@@ -94,6 +95,41 @@ def test_segment_model_input_ablation():
     )
     assert "prev" in s.model_input(with_context=True)
     assert s.model_input(with_context=False) == "target"
+
+
+def test_work_context_defaults_empty_for_public_data():
+    c = _conv()
+    assert c.author_id is None and c.role is None and c.project_id is None
+
+
+def test_work_context_carries_to_segment_and_card():
+    s = Segment(
+        segment_id="s1",
+        conversation_id="c1",
+        source_dataset=SourceDataset.OWN_LOGS,
+        modality=Modality.AGENTIC,
+        turn_span=(0, 1),
+        text="t",
+        author_id="p-07",
+        role=PersonRole.BUSINESS_ANALYST,
+        project_id="orders",
+    )
+    card = KnowledgeCard(
+        card_id="k1",
+        source_segment_ids=[s.segment_id],
+        conversation_id="c1",
+        domains=[Domain.BUSINESS_REQUIREMENTS],
+        knowledge_types=[KnowledgeType.CONTEXTUAL],
+        title="t",
+        summary="s",
+        evidence="e",
+        confidence=0.8,
+        model_version="m1-v1",
+        author_id=s.author_id,
+        role=s.role,
+        project_id=s.project_id,
+    )
+    assert card.role == PersonRole.BUSINESS_ANALYST and card.project_id == "orders"
 
 
 def test_jsonl_round_trip(tmp_path):

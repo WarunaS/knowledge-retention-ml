@@ -10,7 +10,7 @@ from enum import Enum
 
 
 class Domain(str, Enum):
-    """Technical domain axis. Derived from Stack Overflow Developer Survey role/tag categories."""
+    """Domain axis. Technical labels follow Stack Overflow Developer Survey role/tag categories."""
 
     MOBILE = "mobile"
     WEB_FRONTEND = "web_frontend"
@@ -21,6 +21,9 @@ class Domain(str, Enum):
     SECURITY = "security"
     QA_TESTING = "qa_testing"
     ARCHITECTURE_DESIGN = "architecture_design"
+    # Business analyst knowledge: requirements, business rules, stakeholder decisions.
+    # Expected to be rare in public developer corpora; report its scores with that caveat.
+    BUSINESS_REQUIREMENTS = "business_requirements"
     OTHER = "other"
 
 

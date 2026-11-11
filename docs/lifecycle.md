@@ -17,7 +17,7 @@
 | 13 | Deploy | **skipped** | - |
 | 14 | Inference (offline batch) | `krs/inference.py` | `14_inference` |
 | 15-18 | Monitor / drift / retrain | X1 transfer test only: `krs/evaluate/transfer.py` | `16_transfer_test` |
-| - | Application plane | `krs/app/` | later |
+| - | Application plane: agent, MCP, handover packs, optional knowledge map | `krs/app/` | later |
 
 Rules: dedup before split · split by conversation · fit features on train only ·
 tune on validation only · report on gold only · X1 runs once.

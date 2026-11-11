@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detailed Technical Plan - AI Knowledge Retention Agent</title>
+  <style>
+    :root {
+      --bg: #f5f7fb; --panel: #ffffff; --ink: #1f2937; --muted: #5a687a; --line: #dfe7f3;
+      --blue: #2d5bff; --green: #13a67f; --amber: #efaa3b; --purple: #8b5cf6; --red: #d85a5a;
+      --soft-blue: #edf3ff; --soft-green: #ebfaf5; --soft-amber: #fff4df; --soft-purple: #f5eeff;
+      --shadow: 0 12px 30px rgba(17,24,39,0.06);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: Arial, Helvetica, sans-serif; line-height: 1.6; }
+    .container { max-width: 1250px; margin: 0 auto; padding: 28px 18px 60px; }
+    .header { background: linear-gradient(135deg, #eef5ff, #f9fbff); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 28px 30px; margin-bottom: 24px; }
+    h1 { margin: 0 0 10px; font-size: 2.15rem; }
+    .subtitle { margin: 0; color: var(--muted); }
+    .meta { margin-top: 12px; font-size: 0.9rem; color: var(--muted); }
+    .section { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 22px 24px; margin-bottom: 22px; }
+    h2 { margin: 0 0 12px; font-size: 1.38rem; }
+    h3 { margin: 0 0 10px; font-size: 1.08rem; }
+    p, li { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 14px; background: #fbfcff; padding: 16px 18px; }
+    .card ul, .card ol { margin: 0; padding-left: 18px; }
+    .diagram-wrap { overflow-x: auto; padding-top: 10px; }
+    .diagram { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+    .lane { width: 100%; border: 1px dashed #b9c6dd; border-radius: 14px; padding: 12px 10px 10px; background: #fbfcff; }
+    .lane-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; text-align: center; margin-bottom: 8px; }
+    .row { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; flex-wrap: wrap; }
+    .box { min-width: 150px; max-width: 200px; background: white; border: 2px solid var(--line); border-radius: 14px; text-align: center; padding: 10px 10px; font-weight: 700; font-size: 0.92rem; box-shadow: 0 8px 18px rgba(0,0,0,0.03); }
+    .box small { display: block; font-weight: 400; color: var(--muted); font-size: 0.78rem; margin-top: 3px; }
+    .b1 { background: var(--soft-blue); border-color: var(--blue); }
+    .b2 { background: var(--soft-green); border-color: var(--green); }
+    .b3 { background: var(--soft-amber); border-color: var(--amber); }
+    .b4 { background: var(--soft-purple); border-color: var(--purple); }
+    .b5 { background: #fff2f2; border-color: var(--red); }
+    .arrow, .down { font-size: 26px; color: var(--blue); font-weight: bold; line-height: 1; }
+    .stack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .tech { border: 1px solid var(--line); border-radius: 12px; background: #fafcff; padding: 12px 14px; color: var(--muted); }
+    .tech strong { display: block; margin-bottom: 6px; color: var(--ink); }
+    table.tbl { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.95rem; }
+    .tbl th, .tbl td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+    .tbl th { background: #f6f9ff; color: var(--ink); }
+    .tbl td { color: var(--muted); }
+    .tbl td:first-child { color: var(--ink); font-weight: 700; }
+    .callout { margin-top: 12px; padding: 12px 14px; border-left: 5px solid var(--green); border-radius: 10px; background: #ebfaf5; color: var(--ink); font-weight: 600; }
+    .warn { border-left-color: var(--amber); background: var(--soft-amber); }
+    code { background: #f3f6fb; border: 1px solid var(--line); border-radius: 8px; padding: 2px 6px; font-family: Consolas, monospace; color: var(--ink); font-size: 0.9em; }
+    .folder { background: #f9fbff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-top: 12px; color: var(--ink); font-family: Consolas, monospace; font-size: 0.9rem; line-height: 1.5; white-space: pre; overflow-x: auto; }
+    .refs { margin: 0; padding-left: 18px; }
+    .refs li { margin-bottom: 8px; font-size: 0.93rem; }
+    @media (max-width: 640px) { h1 { font-size: 1.7rem; } .box { min-width: 130px; } }
+    @media print {
+      body { background: #fff; }
+      .section, .header, .box, .card { box-shadow: none; }
+      .section, .lane, .card { break-inside: avoid; }
+      .arrow, .down { color: #000; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Detailed Technical Plan</h1>
+      <p class="subtitle">AI Knowledge Retention Agent – Python-first research prototype: data preparation, two-axis labelling, classifier training and evaluation, then knowledge extraction, retrieval and reuse</p>
+      <p class="meta">Version 2 · Revised 13 October 2026 · Companion documents: Research Plan, Detailed Architecture Plan</p>
+    </header>
+
+    <section class="section">
+      <h2>1. Project Goal</h2>
+      <p>
+        Build a proof-of-concept AI knowledge retention system whose research core is a trained classifier. The classifier learns, from public
+        developer–LLM conversations, to identify knowledge-bearing segments and label them by technical domain and knowledge type. Its output drives
+        extraction of knowledge cards, which are stored, retrieved and delivered to a successor through an AI agent.
+      </p>
+      <p>The prototype must demonstrate:</p>
+      <ul>
+        <li>acquisition, filtering and preprocessing of public developer–LLM corpora</li>
+        <li>exploratory analysis and topic discovery</li>
+        <li>two-axis labelling with LLM weak supervision and a human gold set</li>
+        <li>training and comparison of classifiers against baselines, with ablations and significance tests</li>
+        <li>a transfer test of the trained model on consented agentic development logs</li>
+        <li>knowledge extraction, storage, semantic retrieval and agent delivery</li>
+        <li>evaluation of classification, retrieval and successor usefulness</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>2. Why Python</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Technical fit</h3>
+          <ul>
+            <li>The whole modelling stack lives here: scikit-learn, PyTorch, Hugging Face transformers, sentence-transformers</li>
+            <li>First-class dataset tooling for gated Hugging Face corpora</li>
+            <li>Vector stores, FastAPI and the MCP SDK all have Python APIs</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Research fit</h3>
+          <ul>
+            <li>Notebooks for exploratory analysis and result plots</li>
+            <li>Reproducible experiment runners with fixed seeds and configs</li>
+            <li>Standard metric libraries that examiners recognise</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Recommended choice</h3>
+          <ul>
+            <li>Python 3.11+, managed with uv or poetry</li>
+            <li>One package per module, shared schema module</li>
+            <li>Experiments as config-driven scripts, not hand-run cells</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>3. High-Level Design</h2>
+      <div class="diagram-wrap">
+        <div class="diagram">
+          <div class="lane">
+            <div class="lane-title">Data preparation</div>
+            <div class="row">
+              <div class="box b1">Public corpora<small>WildChat · DevGPT · trajectories</small></div>
+              <div class="arrow">→</div>
+              <div class="box">Filter<small>lang · toxicity · turns · relevance</small></div>
+              <div class="arrow">→</div>
+              <div class="box">Dedup + normalise<small>MinHash</small></div>
+              <div class="arrow">→</div>
+              <div class="box">Segment<small>pair + context</small></div>
+              <div class="arrow">→</div>
+              <div class="box b3">EDA + BERTopic</div>
+            </div>
+          </div>
+          <div class="down">↓</div>
+          <div class="lane">
+            <div class="lane-title">Labelling and modelling</div>
+            <div class="row">
+              <div class="box b4">LLM weak labels<small>≈10k segments</small></div>
+              <div class="box b2">Gold set<small>≈400 segments · κ</small></div>
+              <div class="arrow">→</div>
+              <div class="box">Baselines<small>B0 B1 B2</small></div>
+              <div class="arrow">→</div>
+              <div class="box b5">Fine-tune<small>DeBERTa-v3-small</small></div>
+              <div class="arrow">→</div>
+              <div class="box">Ablations + teacher<small>A1 A2 T</small></div>
+              <div class="arrow">→</div>
+              <div class="box b2">Transfer test</div>
+            </div>
+          </div>
+          <div class="down">↓</div>
+          <div class="lane">
+            <div class="lane-title">Knowledge application</div>
+            <div class="row">
+              <div class="box b5">Classify segments</div>
+              <div class="arrow">→</div>
+              <div class="box b3">Extract cards<small>LLM</small></div>
+              <div class="arrow">→</div>
+              <div class="box b4">Store<small>SQLite · Chroma · NetworkX</small></div>
+              <div class="arrow">→</div>
+              <div class="box b1">Retrieve<small>semantic + filters</small></div>
+            </div>
+            <div class="down" style="text-align:center">↓</div>
+            <div class="row">
+              <div class="box b2">Agent<small>FastAPI + MCP</small></div>
+              <div class="arrow">→</div>
+              <div class="box">Evaluate</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>4. System Modules</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>4.1 Data acquisition</h3>
+          <ul>
+            <li>Accept licences and download WildChat-1M, DevGPT and agent trajectory datasets</li>
+            <li>Write a manifest with dataset version, date, licence and row counts</li>
+            <li>One loader per dataset emitting the shared Conversation schema</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.2 Filtering</h3>
+          <ul>
+            <li>English only, toxicity flag false, at least two user–assistant exchanges</li>
+            <li>Technical relevance: zero-shot classifier seeded with keywords; hand-check two hundred items and report precision</li>
+            <li>Keep agentic trajectories regardless of turn count since they are all technical</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.3 Preprocessing</h3>
+          <ul>
+            <li>MinHash near-duplicate removal at conversation level</li>
+            <li>Whitespace and unicode normalisation; keep code blocks; drop system messages</li>
+            <li>Segment into user–assistant pairs with one preceding pair as context; truncate to the model limit</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.4 Exploratory analysis</h3>
+          <ul>
+            <li>Distributions of turns, token lengths, sources and modalities</li>
+            <li>BERTopic clusters to describe themes and sanity-check the domain taxonomy</li>
+            <li>Estimated share of knowledge-bearing segments from a labelled sample</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.5 Labelling</h3>
+          <ul>
+            <li>Codebook for both axes with definitions, examples, near-misses and observable cues</li>
+            <li>LLM weak labelling with structured output over the training pool</li>
+            <li>Human gold set labelled by two members with an overlap subset; Cohen's κ; adjudication</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.6 Modelling and experiments</h3>
+          <ul>
+            <li>Config-driven experiment runner with fixed seeds and conversation-level splits</li>
+            <li>Baselines, fine-tuned multi-label transformer, SetFit few-shot variant</li>
+            <li>Ablations, learning curve, teacher comparison, metrics written per run</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.7 Model registry and classification service</h3>
+          <ul>
+            <li>Versioned weights, config, metrics JSON and model card</li>
+            <li>Service loads the registered model and scores segments on CPU</li>
+            <li>Emits per-label probabilities and a knowledge-bearing flag</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.8 Extraction</h3>
+          <ul>
+            <li>LLM summarisation of flagged segments into typed knowledge cards</li>
+            <li>Card template chosen by knowledge type; domain labels attached</li>
+            <li>Faithfulness check; cards without a grounded source are rejected</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.9 Storage and retrieval</h3>
+          <ul>
+            <li>SQLite for cards, labels, provenance and consent records</li>
+            <li>ChromaDB or FAISS for card embeddings; retrieval filtered by domain and knowledge type</li>
+            <li>NetworkX graph of problem → decision → tool → domain edges with optional one-hop expansion</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.10 Agent and delivery</h3>
+          <ul>
+            <li>Accept a question, retrieve cards, answer with citations to cards and source turns</li>
+            <li>FastAPI REST endpoints for ingestion, classification, retrieval and query</li>
+            <li>MCP server exposing a query tool so a successor asks from their own AI client</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.11 Transfer test</h3>
+          <ul>
+            <li>Consented sample of team members' Claude Code, Cursor or Copilot logs</li>
+            <li>Secrets and personal data redacted; one to two hundred segments hand-labelled</li>
+            <li>Final registered model scored once; macro-F1 drop reported</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.12 Evaluation</h3>
+          <ul>
+            <li>Classification metrics with confidence intervals and significance tests</li>
+            <li>Retrieval metrics on a hand-verified query set</li>
+            <li>Small successor task with and without knowledge cards</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>5. Proposed Technical Stack</h2>
+      <div class="stack-grid">
+        <div class="tech"><strong>Language and environment</strong>Python 3.11+, uv or poetry, ruff, pytest</div>
+        <div class="tech"><strong>Data handling</strong>pandas, NumPy, Hugging Face datasets, pyarrow</div>
+        <div class="tech"><strong>Text processing</strong>spaCy, regex, Hugging Face tokenizers, langdetect or fastText language id</div>
+        <div class="tech"><strong>Deduplication</strong>datasketch MinHash LSH</div>
+        <div class="tech"><strong>Topic modelling</strong>BERTopic with UMAP and HDBSCAN</div>
+        <div class="tech"><strong>Weak labelling</strong>Claude or GPT API with structured JSON output</div>
+        <div class="tech"><strong>Human annotation</strong>Label Studio, or CSV with written guidelines</div>
+        <div class="tech"><strong>Classical ML baselines</strong>scikit-learn: TF-IDF, logistic regression, linear SVM, class weights</div>
+        <div class="tech"><strong>Embeddings</strong>sentence-transformers, all-MiniLM-L6-v2 or bge-small</div>
+        <div class="tech"><strong>Deep learning</strong>PyTorch, Hugging Face transformers, DeBERTa-v3-small or DistilBERT, SetFit</div>
+        <div class="tech"><strong>Compute</strong>Free Colab GPU for fine-tuning; laptop CPU for everything else</div>
+        <div class="tech"><strong>Experiment tracking</strong>Config files plus metrics JSON per run; MLflow optional</div>
+        <div class="tech"><strong>Statistics</strong>scipy for bootstrap intervals and paired tests; scikit-learn for κ and F1</div>
+        <div class="tech"><strong>Vector store</strong>ChromaDB or FAISS</div>
+        <div class="tech"><strong>Graph</strong>NetworkX in-process</div>
+        <div class="tech"><strong>Metadata store</strong>SQLite; PostgreSQL only if scaling later</div>
+        <div class="tech"><strong>LLM for extraction and answers</strong>Cloud API by default; local model via Hugging Face as fallback</div>
+        <div class="tech"><strong>Faithfulness</strong>ragas, or an NLI entailment model</div>
+        <div class="tech"><strong>API and delivery</strong>FastAPI, Uvicorn, MCP Python SDK</div>
+        <div class="tech"><strong>Visualisation</strong>matplotlib, seaborn; Streamlit optional for a demo page</div>
+        <div class="tech"><strong>Dev tooling</strong>Jupyter, VS Code, Git and GitHub</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>6. Data Sources and Filtering Rules</h2>
+      <table class="tbl">
+        <thead><tr><th style="width:20%">Source</th><th>What it contains</th><th>Role</th><th style="width:26%">Filtering</th></tr></thead>
+        <tbody>
+          <tr><td>WildChat-1M</td><td>Real ChatGPT conversations with GPT-3.5 and GPT-4, language and toxicity metadata</td><td>Main training pool, conversational modality</td><td>English, non-toxic, two or more exchanges, programming relevance</td></tr>
+          <tr><td>DevGPT</td><td>ChatGPT conversations shared by developers in GitHub artefacts and Hacker News, with repository links</td><td>Training pool with free weak domain labels from repository language and topics</td><td>English, remove duplicate shares</td></tr>
+          <tr><td>SWE-agent and OpenHands trajectories</td><td>Agent runs on real repositories with tool calls, edits and test runs</td><td>Agentic modality; richest source of decision and procedural knowledge</td><td>Completed runs only; collapse long tool outputs</td></tr>
+          <tr><td>Own consented logs</td><td>Team members' Claude Code, Cursor or Copilot sessions</td><td>Transfer test only</td><td>Consent, redaction, hand labels</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn">Public chatbot logs are a proxy for workplace logs. The report states this and uses the transfer test to measure the gap.</div>
+    </section>
+
+    <section class="section">
+      <h2>7. Labelling Protocol</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Taxonomy</h3>
+          <ul>
+            <li><strong>Domain, multi-label:</strong> mobile · web frontend · backend and APIs · data and analytics · cloud and infrastructure · DevOps and CI/CD · security · QA and testing · architecture and design · other</li>
+            <li><strong>Knowledge type, multi-label:</strong> domain · procedural · decision · contextual · none</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Weak labels</h3>
+          <ul>
+            <li>About ten thousand segments labelled by an LLM using the codebook, structured output, temperature zero</li>
+            <li>Raw responses stored; a random hundred hand-checked to estimate label noise</li>
+            <li>Repository metadata from DevGPT used as a second weak signal for domain</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Gold labels</h3>
+          <ul>
+            <li>About four hundred segments, stratified by source and modality</li>
+            <li>Two raters each label all; Cohen's κ per axis; disagreements adjudicated by a third member</li>
+            <li>κ below 0.6 triggers one codebook revision and relabel, both reported</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Splits</h3>
+          <ul>
+            <li>Training and validation drawn from weak-labelled segments, split by conversation id</li>
+            <li>Test is the gold set only; gold segments are excluded from training</li>
+            <li>Transfer set is scored once with the final model</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>8. Experiment Design</h2>
+      <table class="tbl">
+        <thead><tr><th style="width:8%">Run</th><th style="width:30%">Model</th><th>Purpose</th><th style="width:22%">Hypothesis</th></tr></thead>
+        <tbody>
+          <tr><td>B0</td><td>Majority class</td><td>Floor</td><td>—</td></tr>
+          <tr><td>B1</td><td>TF-IDF + logistic regression</td><td>Lexical baseline</td><td>H1</td></tr>
+          <tr><td>B2</td><td>MiniLM embeddings + logistic regression</td><td>Embedding baseline</td><td>H1</td></tr>
+          <tr><td>M1</td><td>DeBERTa-v3-small fine-tuned on weak labels, two multi-label heads</td><td>Main model</td><td>H1, H2</td></tr>
+          <tr><td>M2</td><td>SetFit trained on fifty gold examples per class</td><td>How little human labelling is enough</td><td>Labelling budget</td></tr>
+          <tr><td>T</td><td>LLM zero-shot on the gold set</td><td>Teacher ceiling, plus cost and latency per thousand segments</td><td>H2</td></tr>
+          <tr><td>A1</td><td>M1 without the context turn</td><td>Ablation</td><td>H3</td></tr>
+          <tr><td>A2</td><td>M1 trained on 1k, 2k, 5k and 10k segments</td><td>Learning curve</td><td>Labelling budget</td></tr>
+          <tr><td>X1</td><td>Final M1 on consented own logs</td><td>Transfer gap</td><td>RQ3</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:10px">Metrics: macro-F1 and per-class precision and recall on the gold set, confusion matrices, bootstrap 95% confidence intervals over segments, and a paired test between M1 and B2. Model selection uses the weak-label validation split; reported numbers come only from the gold set.</p>
+    </section>
+
+    <section class="section">
+      <h2>9. Data Schemas</h2>
+      <h3>9.1 Segment and label record</h3>
+      <table class="tbl">
+        <thead><tr><th style="width:24%">Field</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>segment_id</td><td>Stable identifier for the unit of labelling and classification</td></tr>
+          <tr><td>conversation_id</td><td>Source conversation; splits are made on this key</td></tr>
+          <tr><td>source_dataset</td><td>WildChat, DevGPT, trajectory dataset or own logs</td></tr>
+          <tr><td>modality</td><td>conversational or agentic</td></tr>
+          <tr><td>turn_span</td><td>Turn indices covered, including the context turn</td></tr>
+          <tr><td>text</td><td>Normalised segment text as presented to the model</td></tr>
+          <tr><td>domain_labels</td><td>Multi-label domain tags</td></tr>
+          <tr><td>knowledge_type_labels</td><td>Multi-label knowledge-type tags</td></tr>
+          <tr><td>label_source</td><td>llm, human_rater_1, human_rater_2 or adjudicated</td></tr>
+          <tr><td>split</td><td>train, validation, test or transfer</td></tr>
+        </tbody>
+      </table>
+      <h3 style="margin-top:18px">9.2 Knowledge card</h3>
+      <table class="tbl">
+        <thead><tr><th style="width:24%">Field</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>card_id</td><td>Unique identifier for the knowledge card</td></tr>
+          <tr><td>source_segment_ids</td><td>Provenance back to segments and therefore to turns; mandatory</td></tr>
+          <tr><td>conversation_id</td><td>Source conversation</td></tr>
+          <tr><td>domains</td><td>Domain labels inherited from the classifier</td></tr>
+          <tr><td>knowledge_types</td><td>Knowledge-type labels inherited from the classifier</td></tr>
+          <tr><td>title</td><td>Short label for the knowledge item</td></tr>
+          <tr><td>summary</td><td>Externalised explicit form of the decision, procedure, fact or context</td></tr>
+          <tr><td>decision</td><td>For decision cards: what was chosen over what, and why</td></tr>
+          <tr><td>tools_involved</td><td>Languages, frameworks, services or agent tools mentioned</td></tr>
+          <tr><td>evidence</td><td>Quoted span from the source that grounds the summary</td></tr>
+          <tr><td>confidence</td><td>Classifier probability for the knowledge-bearing flag</td></tr>
+          <tr><td>faithfulness_score</td><td>Result of the grounding check</td></tr>
+          <tr><td>model_version</td><td>Registered classifier version that produced the labels</td></tr>
+          <tr><td>created_at</td><td>Generation timestamp</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>10. 4-Week Development Plan, Two Streams</h2>
+      <p>Four members work in two streams of two. The modelling stream produces the research result; the system stream builds the application that consumes it. Members swap onto labelling in weeks one and two so everyone contributes gold labels.</p>
+      <table class="tbl">
+        <thead><tr><th style="width:10%">Week</th><th>Modelling stream (members 1 and 2)</th><th>System stream (members 3 and 4)</th><th style="width:22%">Milestone</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Accept licences, download corpora, write manifest. Filtering, dedup, segmentation. EDA and BERTopic. Codebook v1. Gold labelling starts.</td>
+            <td>Lock Conversation, Segment, Label and Card schemas. Repo skeleton, config, tests. SQLite and vector store set up. Loader adapters.</td>
+            <td>Schemas locked; filtered corpus; codebook v1</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>LLM weak labelling of the training pool. Gold set complete, κ reported, codebook revised if needed. Baselines B0 to B2.</td>
+            <td>Extraction prompts and card templates. Faithfulness check. Embedding and indexing of mock cards. FastAPI skeleton.</td>
+            <td>Gold set with κ; baseline results</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Fine-tune M1 on Colab. SetFit M2. Teacher run T with cost and latency. Ablations A1 and A2.</td>
+            <td>Classification service loads registered model. Retrieval with label filters. NetworkX graph. Agent with citations. MCP tool.</td>
+            <td>Registered model; end-to-end query works</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Transfer test X1 on consented logs. Error analysis, confusion matrices, confidence intervals, plots. Results write-up.</td>
+            <td>Integration run on the full filtered corpus. Retrieval evaluation. Successor task with a few participants. Demo and documentation.</td>
+            <td>Results tables; demo; report draft</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">Protected if time runs short: gold set and κ, baselines, M1, transfer test. First to scale down: successor task, graph expansion, Streamlit page.</div>
+    </section>
+
+    <section class="section">
+      <h2>11. Evaluation Plan</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Taxonomy and labels</h3>
+          <ul>
+            <li>Cohen's κ per axis on the rater overlap</li>
+            <li>Estimated LLM label noise from a hand-checked sample</li>
+            <li>Label distribution per source and modality</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Classifier</h3>
+          <ul>
+            <li>Macro-F1, per-class precision and recall, confusion matrices</li>
+            <li>Bootstrap confidence intervals; paired test M1 versus B2</li>
+            <li>Learning curve and context ablation</li>
+            <li>Cost and latency per thousand segments, M1 versus the LLM teacher</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Transfer</h3>
+          <ul>
+            <li>Macro-F1 on consented own logs versus the public gold set</li>
+            <li>Error analysis by modality and domain</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Extraction and retrieval</h3>
+          <ul>
+            <li>Faithfulness of cards to source segments; human spot check</li>
+            <li>Recall@k and MRR on a hand-verified query set</li>
+            <li>Whether label filters improve retrieval over plain semantic search</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Successor usefulness</h3>
+          <ul>
+            <li>Participants answer questions about unfamiliar work with and without cards</li>
+            <li>Answer quality rated blind; time to answer recorded</li>
+            <li>Small sample, reported as indicative</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>12. Risks and Mitigation</h2>
+      <table class="tbl">
+        <thead><tr><th style="width:34%">Risk</th><th style="width:8%">P</th><th style="width:8%">I</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td>Low inter-annotator agreement; taxonomy not separable</td><td>M</td><td>H</td><td>One codebook revision loop; report κ before and after; merge or drop a class if needed and say so</td></tr>
+          <tr><td>LLM weak labels are noisy</td><td>M</td><td>M</td><td>Estimate noise on a hand-checked sample; report results only on the human gold set</td></tr>
+          <tr><td>Decision knowledge is rare in chatbot logs</td><td>H</td><td>M</td><td>Class weights; targeted sampling of segments with decision cues; agentic trajectories as a richer source</td></tr>
+          <tr><td>Leakage between train and test</td><td>M</td><td>H</td><td>Conversation-level splits; dedup before splitting; gold segments excluded from training</td></tr>
+          <tr><td>Public logs do not resemble workplace logs</td><td>H</td><td>M</td><td>Transfer test on consented own logs; state the limitation plainly</td></tr>
+          <tr><td>Gated datasets or licence issues</td><td>L</td><td>H</td><td>Accept licences in week one; LMSYS-Chat-1M as a fallback corpus</td></tr>
+          <tr><td>Fine-tuning compute unavailable</td><td>L</td><td>M</td><td>Free Colab GPU; SetFit and embedding baselines run on CPU</td></tr>
+          <tr><td>Extraction produces unfaithful cards</td><td>M</td><td>H</td><td>Mandatory evidence span; faithfulness check; reject ungrounded cards</td></tr>
+          <tr><td>Scope creep into graph, MCP and dashboard</td><td>M</td><td>H</td><td>Thin implementations; modelling stream protected in the plan</td></tr>
+          <tr><td>Privacy exposure from own logs</td><td>L</td><td>H</td><td>Written consent; redaction; local processing only; deletion after the study</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>13. Deliverables</h2>
+      <ul>
+        <li>Filtered, deduplicated and segmented corpus with a dataset manifest</li>
+        <li>Exploratory analysis notebook with topic clusters and distributions</li>
+        <li>Codebook, gold-labelled set and agreement statistics</li>
+        <li>Trained classifier with weights, config, metrics and a model card</li>
+        <li>Results tables, learning curve, confusion matrices and error analysis</li>
+        <li>Transfer-test report on consented agentic logs</li>
+        <li>Knowledge extraction pipeline and card store with provenance</li>
+        <li>Retrieval service and AI agent with REST and MCP delivery</li>
+        <li>Evaluation report covering classification, retrieval and successor usefulness</li>
+      </ul>
+      <div class="callout">The research claim rests on the classifier results and the transfer test. The agent is the demonstration of how those results are used.</div>
+    </section>
+
+    <section class="section">
+      <h2>14. Suggested Folder Structure</h2>
+      <div class="folder">project/
+├── data/
+│   ├── raw/              immutable downloads + manifest.json
+│   ├── filtered/
+│   ├── segments/
+│   └── labels/           weak.jsonl, gold_rater1.csv, gold_rater2.csv, gold_adjudicated.csv
+├── src/
+│   ├── schema.py         Conversation, Turn, Segment, Label, Prediction, KnowledgeCard
+│   ├── loaders/          wildchat.py, devgpt.py, trajectories.py, own_logs.py
+│   ├── filtering.py
+│   ├── preprocessing.py  dedup, normalise, segment
+│   ├── eda.py
+│   ├── labelling/        codebook.md, llm_labeller.py, agreement.py
+│   ├── modelling/        baselines.py, finetune.py, setfit_run.py, ablations.py, registry.py
+│   ├── classify.py       classification service
+│   ├── extraction.py
+│   ├── storage.py        sqlite + chroma + networkx
+│   ├── retrieval.py
+│   ├── agent.py          FastAPI app
+│   ├── mcp_server.py
+│   └── evaluate/         classification.py, transfer.py, retrieval.py, successor_task.py
+├── configs/              one YAML per experiment run (B0 … X1)
+├── models/               registered versions: weights, config, metrics.json, model_card.md
+├── notebooks/            eda.ipynb, results.ipynb
+├── results/              per-run metrics, plots, tables
+├── tests/
+├── README.md
+└── pyproject.toml</div>
+    </section>
+
+    <section class="section">
+      <h2>15. References</h2>
+      <ol class="refs">
+        <li>Anthropic (2024) <em>Introducing the Model Context Protocol</em>. Available at: https://modelcontextprotocol.io/ (Accessed: 13 October 2026).</li>
+        <li>Broder, A.Z. (1997) 'On the resemblance and containment of documents', in <em>Proceedings of Compression and Complexity of Sequences</em>. IEEE, pp. 21–29.</li>
+        <li>Cohen, J. (1960) 'A coefficient of agreement for nominal scales', <em>Educational and Psychological Measurement</em>, 20(1), pp. 37–46.</li>
+        <li>Gilardi, F., Alizadeh, M. and Kubli, M. (2023) 'ChatGPT outperforms crowd workers for text-annotation tasks', <em>PNAS</em>, 120(30).</li>
+        <li>Grootendorst, M. (2022) 'BERTopic: neural topic modeling with a class-based TF-IDF procedure', arXiv preprint, arXiv:2203.05794.</li>
+        <li>He, P., Gao, J. and Chen, W. (2021) 'DeBERTaV3', arXiv preprint, arXiv:2111.09543.</li>
+        <li>Hinton, G., Vinyals, O. and Dean, J. (2015) 'Distilling the knowledge in a neural network', arXiv preprint, arXiv:1503.02531.</li>
+        <li>Landis, J.R. and Koch, G.G. (1977) 'The measurement of observer agreement for categorical data', <em>Biometrics</em>, 33(1), pp. 159–174.</li>
+        <li>Lewis, P. et al. (2020) 'Retrieval-augmented generation for knowledge-intensive NLP tasks', <em>Advances in Neural Information Processing Systems</em>, 33, pp. 9459–9474.</li>
+        <li>Mitchell, M. et al. (2019) 'Model cards for model reporting', in <em>Proceedings of FAT* 2019</em>. ACM, pp. 220–229.</li>
+        <li>Reimers, N. and Gurevych, I. (2019) 'Sentence-BERT: sentence embeddings using Siamese BERT-networks', in <em>Proceedings of EMNLP-IJCNLP 2019</em>. ACL.</li>
+        <li>Sanh, V., Debut, L., Chaumond, J. and Wolf, T. (2019) 'DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter', arXiv preprint, arXiv:1910.01108.</li>
+        <li>Tunstall, L. et al. (2022) 'Efficient few-shot learning without prompts', arXiv preprint, arXiv:2209.11055.</li>
+        <li>Wang, S., Liu, Y., Xu, Y., Zhu, C. and Zeng, M. (2021) 'Want to reduce labeling cost? GPT-3 can help', in <em>Findings of EMNLP 2021</em>. ACL, pp. 4195–4205.</li>
+        <li>Wang, X. et al. (2024) 'OpenHands: an open platform for AI software developers as generalist agents', arXiv preprint, arXiv:2407.16741.</li>
+        <li>Xiao, T., Treude, C., Hata, H. and Matsumoto, K. (2024) 'DevGPT: studying developer-ChatGPT conversations', in <em>Proceedings of MSR 2024</em>. ACM.</li>
+        <li>Yang, J. et al. (2024) 'SWE-agent: agent-computer interfaces enable automated software engineering', arXiv preprint, arXiv:2405.15793.</li>
+        <li>Zhao, W. et al. (2024) 'WildChat: 1M ChatGPT interaction logs in the wild', in <em>Proceedings of ICLR 2024</em>. arXiv:2405.01470.</li>
+        <li>Zheng, L. et al. (2024) 'LMSYS-Chat-1M: a large-scale real-world LLM conversation dataset', in <em>Proceedings of ICLR 2024</em>. arXiv:2309.11998.</li>
+      </ol>
+    </section>
+  </div>
+</body>
+</html>

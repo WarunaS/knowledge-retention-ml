@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detailed Architecture Plan - AI Knowledge Retention Agent</title>
+  <style>
+    :root {
+      --bg: #f5f7fb; --panel: #ffffff; --ink: #1f2937; --muted: #5a687a; --line: #dfe7f3;
+      --blue: #2d5bff; --green: #13a67f; --amber: #efaa3b; --purple: #8b5cf6; --red: #d85a5a;
+      --soft-blue: #edf3ff; --soft-green: #ebfaf5; --soft-amber: #fff4df; --soft-purple: #f5eeff;
+      --shadow: 0 12px 30px rgba(17,24,39,0.06);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: Arial, Helvetica, sans-serif; line-height: 1.6; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 28px 18px 60px; }
+    .header { background: linear-gradient(135deg, #edf5ff, #f9fbff); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 28px 30px; margin-bottom: 24px; }
+    h1 { margin: 0 0 10px; font-size: 2.1rem; }
+    .subtitle { margin: 0; color: var(--muted); }
+    .meta { margin-top: 12px; font-size: 0.9rem; color: var(--muted); }
+    .section { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 22px 24px; margin-bottom: 22px; }
+    h2 { margin: 0 0 12px; font-size: 1.38rem; }
+    h3 { margin: 0 0 10px; font-size: 1.08rem; }
+    p, li { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 14px; background: #fbfcff; padding: 16px 18px; }
+    .card ul, .card ol { margin: 0; padding-left: 18px; }
+    .diagram-wrap { overflow-x: auto; padding-top: 12px; }
+    .diagram { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+    .lane { width: 100%; border: 1px dashed #b9c6dd; border-radius: 14px; padding: 12px 10px 10px; background: #fbfcff; }
+    .lane-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; text-align: center; margin-bottom: 8px; }
+    .row { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; flex-wrap: wrap; }
+    .box { min-width: 150px; max-width: 200px; background: white; border: 2px solid var(--line); border-radius: 14px; padding: 10px 10px; text-align: center; font-weight: 700; font-size: 0.92rem; box-shadow: 0 8px 20px rgba(0,0,0,0.03); }
+    .box small { display: block; font-weight: 400; color: var(--muted); font-size: 0.78rem; margin-top: 3px; }
+    .b1 { background: var(--soft-blue); border-color: var(--blue); }
+    .b2 { background: var(--soft-green); border-color: var(--green); }
+    .b3 { background: var(--soft-amber); border-color: var(--amber); }
+    .b4 { background: var(--soft-purple); border-color: var(--purple); }
+    .b5 { background: #fff2f2; border-color: var(--red); }
+    .arrow, .down { font-size: 26px; color: var(--blue); font-weight: bold; line-height: 1; }
+    .stack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .tech { border: 1px solid var(--line); background: #fafcff; border-radius: 12px; padding: 12px 14px; color: var(--muted); }
+    .tech strong { display: block; margin-bottom: 6px; color: var(--ink); }
+    table.tbl { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.95rem; }
+    .tbl th, .tbl td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; }
+    .tbl th { background: #f6f9ff; color: var(--ink); }
+    .tbl td { color: var(--muted); }
+    .tbl td:first-child { color: var(--ink); font-weight: 700; }
+    .callout { margin-top: 14px; padding: 12px 14px; border-left: 5px solid var(--green); border-radius: 10px; background: #ebfaf5; color: var(--ink); font-weight: 600; }
+    .warn { border-left-color: var(--amber); background: var(--soft-amber); }
+    code { background: #f3f6fb; border: 1px solid var(--line); border-radius: 8px; padding: 2px 6px; font-family: Consolas, monospace; color: var(--ink); font-size: 0.9em; }
+    .refs { margin: 0; padding-left: 18px; }
+    .refs li { margin-bottom: 8px; font-size: 0.93rem; }
+    @media (max-width: 640px) { h1 { font-size: 1.7rem; } .box { min-width: 130px; } }
+    @media print {
+      body { background: #fff; }
+      .section, .header, .box, .card { box-shadow: none; }
+      .section, .lane, .card { break-inside: avoid; }
+      .arrow, .down { color: #000; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Detailed Architecture Plan</h1>
+      <p class="subtitle">AI Knowledge Retention Agent – a data-and-modelling plane that learns to classify developer–AI knowledge, and a knowledge-application plane that stores, retrieves and delivers it</p>
+      <p class="meta">Version 2 · Revised 13 October 2026 · Companion documents: Research Plan, Detailed Technical Plan</p>
+    </header>
+
+    <section class="section">
+      <h2>1. Architectural Objective</h2>
+      <p>
+        The architecture has two jobs. First, it must support a reproducible machine-learning study: acquire public developer–LLM corpora,
+        label them on two axes, train and compare classifiers, and measure how the best model transfers to real agentic development logs.
+        Second, it must turn the classifier's output into reusable organisational knowledge: extract knowledge cards, store and index them,
+        and deliver them to a successor through an AI agent.
+      </p>
+      <p>
+        The pipeline is: corpus acquisition → filtering and preprocessing → two-axis labelling → model training and evaluation →
+        classification of segments → knowledge extraction → storage and indexing → retrieval and delivery → evaluation.
+        The architecture is deliberately light, explainable and local-first. It is a research prototype, not an enterprise platform.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>2. Architectural Principles</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Experiment-first</h3>
+          <ul>
+            <li>Every modelling step produces a number against a baseline</li>
+            <li>Splits, seeds and dataset versions are fixed and recorded</li>
+            <li>The trained model is an artefact with a version, metrics and a model card</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Data-first</h3>
+          <ul>
+            <li>Filtering, deduplication and labelling quality matter more than model size</li>
+            <li>Human gold labels are the only basis for reported results</li>
+            <li>Provenance from card back to source turn is preserved everywhere</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Local-first and privacy-aware</h3>
+          <ul>
+            <li>The research question is whether a local model can replace a cloud LLM for classification</li>
+            <li>Cloud LLM calls are confined to labelling and extraction, never to serving</li>
+            <li>Own logs are used only with written consent and only for the transfer test</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Retrieval-first value</h3>
+          <ul>
+            <li>Classified and extracted knowledge is useful only if a successor can find it</li>
+            <li>Labels drive retrieval filters and card framing</li>
+            <li>Delivery goes through the successor's own AI client via MCP</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Minimal viable prototype</h3>
+          <ul>
+            <li>Vector index first; the relationship graph stays lightweight</li>
+            <li>No live capture, no dashboard unless time allows</li>
+            <li>Every component is replaceable behind a small interface</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>3. High-Level System Architecture</h2>
+      <div class="diagram-wrap">
+        <div class="diagram">
+          <div class="lane">
+            <div class="lane-title">Plane A · Data and modelling (research core)</div>
+            <div class="row">
+              <div class="box b1">Corpus acquisition<small>WildChat · DevGPT · agent trajectories</small></div>
+              <div class="arrow">→</div>
+              <div class="box">Filtering layer<small>language · toxicity · turns · relevance</small></div>
+              <div class="arrow">→</div>
+              <div class="box">Preprocessing layer<small>MinHash dedup · normalise · segment</small></div>
+              <div class="arrow">→</div>
+              <div class="box b3">EDA and topic discovery<small>BERTopic</small></div>
+            </div>
+            <div class="down" style="text-align:center">↓</div>
+            <div class="row">
+              <div class="box b4">Labelling service<small>LLM weak labels · structured output</small></div>
+              <div class="arrow">→</div>
+              <div class="box b2">Annotation set<small>gold labels · κ · adjudication</small></div>
+              <div class="arrow">→</div>
+              <div class="box b5">Training and experiments<small>baselines · fine-tune · ablations</small></div>
+              <div class="arrow">→</div>
+              <div class="box">Model registry<small>weights · metrics · model card</small></div>
+            </div>
+          </div>
+          <div class="down">↓</div>
+          <div class="lane">
+            <div class="lane-title">Plane B · Knowledge application</div>
+            <div class="row">
+              <div class="box b5">Classification service<small>serves the trained model</small></div>
+              <div class="arrow">→</div>
+              <div class="box b3">Extraction engine<small>LLM → knowledge cards</small></div>
+              <div class="arrow">→</div>
+              <div class="box b4">Knowledge repository<small>metadata DB · vector index · light graph</small></div>
+              <div class="arrow">→</div>
+              <div class="box b1">Retrieval service<small>semantic + label filters</small></div>
+              <div class="arrow">→</div>
+              <div class="box b2">AI assistant<small>REST API + MCP tool</small></div>
+            </div>
+          </div>
+          <div class="down">↓</div>
+          <div class="lane">
+            <div class="lane-title">Cross-cutting · Evaluation and governance</div>
+            <div class="row">
+              <div class="box">Classification metrics<small>macro-F1 · CI · tests</small></div>
+              <div class="box">Transfer test<small>consented own logs</small></div>
+              <div class="box">Retrieval metrics<small>Recall@k · MRR</small></div>
+              <div class="box">Successor task<small>with vs without cards</small></div>
+              <div class="box">Provenance and consent<small>audit of every artefact</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>4. Layered Architecture</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>4.1 Data acquisition layer</h3>
+          <ul>
+            <li>Download gated public corpora after licence acceptance</li>
+            <li>Record dataset name, version, date and licence in a manifest</li>
+            <li>Keep raw files immutable for auditing</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.2 Data preparation layer</h3>
+          <ul>
+            <li>Language, toxicity and turn-count filters</li>
+            <li>Technical relevance filter with a reported precision estimate</li>
+            <li>MinHash near-duplicate removal, normalisation, segmentation into turn windows with one turn of context</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.3 Labelling layer</h3>
+          <ul>
+            <li>Codebook as the single definition of both label axes</li>
+            <li>LLM labelling with schema-constrained output for the training pool</li>
+            <li>Annotation tooling for the human gold set and agreement statistics</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.4 Modelling layer</h3>
+          <ul>
+            <li>Baselines: majority, TF-IDF with logistic regression, embeddings with logistic regression</li>
+            <li>Fine-tuned small transformer, multi-label heads for domain and knowledge type</li>
+            <li>Few-shot SetFit variant, ablations, learning curve, teacher comparison</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.5 Model registry and serving layer</h3>
+          <ul>
+            <li>Versioned weights, training config, metrics and model card</li>
+            <li>Classification service loads the selected model and scores segments with calibrated probabilities</li>
+            <li>Runs on CPU; no cloud call at inference time</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.6 Knowledge extraction layer</h3>
+          <ul>
+            <li>Only segments the classifier flags as knowledge-bearing are extracted</li>
+            <li>Card template chosen by knowledge type; domain labels attached</li>
+            <li>Faithfulness check: every card cites its source segment</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.7 Storage and indexing layer</h3>
+          <ul>
+            <li>Metadata database for cards, labels, provenance and consent</li>
+            <li>Vector index of card embeddings for semantic search</li>
+            <li>Lightweight graph of problem → decision → tool → domain edges, in-process</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.8 Retrieval and delivery layer</h3>
+          <ul>
+            <li>Semantic retrieval filtered by domain and knowledge type</li>
+            <li>Optional one-hop graph expansion for connected reasoning</li>
+            <li>REST API and an MCP tool so a successor asks from inside their own AI client</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>4.9 Evaluation layer</h3>
+          <ul>
+            <li>Classification, transfer, retrieval and successor-task measurement</li>
+            <li>Results tables and plots generated from stored predictions, not by hand</li>
+            <li>Every reported number traceable to a run id</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>5. Core Components</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>5.1 Corpus loader</h3>
+          <ul>
+            <li>One adapter per dataset producing the shared Conversation record</li>
+            <li>Carries source, licence and modality (conversational or agentic)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>5.2 Filter and preprocessor</h3>
+          <ul>
+            <li>Rule filters plus a zero-shot relevance classifier</li>
+            <li>Deduplication, normalisation, segmentation, tokenisation checks</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>5.3 Labelling service</h3>
+          <ul>
+            <li>Prompts the LLM with the codebook and returns schema-valid labels</li>
+            <li>Stores raw LLM output for auditability</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>5.4 Annotation set</h3>
+          <ul>
+            <li>Gold labels from two raters with an overlap subset</li>
+            <li>Kappa computation, adjudication log, codebook revision history</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>5.5 Trainer and experiment runner</h3>
+          <ul>
+            <li>Configurable runs for baselines, fine-tuning, ablations</li>
+            <li>Fixed seeds, conversation-level splits, metrics written per run</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>5.6 Classification service</h3>
+          <ul>
+            <li>Loads the registered model and scores new segments</li>
+            <li>Emits label probabilities and a knowledge-bearing flag</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>5.7 Extraction engine</h3>
+          <ul>
+            <li>LLM summarisation into typed knowledge cards</li>
+            <li>Faithfulness check and rejection of ungrounded cards</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>5.8 Knowledge repository</h3>
+          <ul>
+            <li>Metadata database, vector index, lightweight graph</li>
+            <li>Provenance from card to segment to source conversation</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>5.9 Query agent</h3>
+          <ul>
+            <li>Accepts a question, retrieves cards, answers with citations</li>
+            <li>Exposed as REST and as an MCP tool</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>6. Model Lifecycle</h2>
+      <div class="diagram-wrap">
+        <div class="diagram">
+          <div class="row">
+            <div class="box b1">Codebook v<em>n</em></div>
+            <div class="arrow">→</div>
+            <div class="box b4">Label</div>
+            <div class="arrow">→</div>
+            <div class="box b5">Train</div>
+            <div class="arrow">→</div>
+            <div class="box b2">Evaluate on gold</div>
+            <div class="arrow">→</div>
+            <div class="box">Register</div>
+            <div class="arrow">→</div>
+            <div class="box b3">Serve</div>
+            <div class="arrow">→</div>
+            <div class="box">Transfer test</div>
+          </div>
+        </div>
+      </div>
+      <ul>
+        <li>If inter-annotator agreement is below 0.6, the codebook is revised and the labelling loop re-runs once. Both versions are reported.</li>
+        <li>Only a model evaluated on the gold set can be registered. Weak-label validation scores are used for model selection, never for reporting.</li>
+        <li>The transfer test runs once on the final registered model so that it cannot be tuned against the own-log sample.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>7. Data Flow</h2>
+      <ol>
+        <li>Corpus loaders read the public datasets and emit Conversation records with source and modality.</li>
+        <li>The filter keeps English, non-toxic, multi-turn, technically relevant conversations.</li>
+        <li>The preprocessor removes near-duplicates, normalises text and cuts conversations into Segment records with one turn of context.</li>
+        <li>Exploratory analysis describes the corpus and BERTopic clusters seed the domain taxonomy.</li>
+        <li>The labelling service assigns weak labels to the training pool; two raters produce the gold set and agreement is computed.</li>
+        <li>The experiment runner trains baselines and the fine-tuned model on conversation-level splits and writes metrics per run.</li>
+        <li>The best model is registered and loaded by the classification service.</li>
+        <li>The classification service scores segments; flagged segments go to the extraction engine, which writes typed knowledge cards.</li>
+        <li>Cards are stored with provenance, embedded into the vector index, and linked in the lightweight graph.</li>
+        <li>The query agent retrieves cards for a successor's question and answers with citations, via REST or MCP.</li>
+        <li>The evaluation layer computes classification, transfer, retrieval and successor-task results from stored predictions and logs.</li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <h2>8. Recommended Runtime Architecture</h2>
+      <div class="stack-grid">
+        <div class="tech"><strong>Data and experiments</strong>Python 3.11+, pandas, Hugging Face datasets, Jupyter notebooks for EDA and result plots</div>
+        <div class="tech"><strong>Labelling</strong>Claude or GPT API with structured output for weak labels; Label Studio or CSV for human gold labels</div>
+        <div class="tech"><strong>Modelling</strong>scikit-learn baselines; Hugging Face transformers and PyTorch for fine-tuning; SetFit for the few-shot variant; free Colab GPU or laptop CPU</div>
+        <div class="tech"><strong>Model registry</strong>Versioned folder with weights, config, metrics JSON and model card; MLflow optional</div>
+        <div class="tech"><strong>Processing workers</strong>Python modules for filtering, preprocessing, classification and extraction, run as batch scripts</div>
+        <div class="tech"><strong>Storage</strong>SQLite for metadata and provenance; ChromaDB or FAISS for vectors; NetworkX for the lightweight graph</div>
+        <div class="tech"><strong>API and delivery</strong>FastAPI REST endpoints and an MCP server exposing a query tool</div>
+        <div class="tech"><strong>LLM for extraction and answers</strong>Cloud API by default; local model via Hugging Face as a fallback</div>
+        <div class="tech"><strong>Evaluation</strong>scikit-learn and scipy for metrics and tests; ragas or an NLI check for faithfulness; matplotlib for plots</div>
+        <div class="tech"><strong>Frontend</strong>Optional Streamlit page for demonstration; not required for the research result</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>9. Data and Knowledge Representation</h2>
+      <table class="tbl">
+        <thead><tr><th style="width:22%">Entity</th><th>Description</th><th style="width:30%">Produced by</th></tr></thead>
+        <tbody>
+          <tr><td>Conversation</td><td>A full dialogue or agent run with source dataset, licence, modality and ordered turns</td><td>Corpus loader</td></tr>
+          <tr><td>Turn</td><td>A single user, assistant or tool message with role, content and optional tool name</td><td>Corpus loader</td></tr>
+          <tr><td>Segment</td><td>A user–assistant pair plus one preceding pair as context; the unit of labelling and classification</td><td>Preprocessor</td></tr>
+          <tr><td>Label</td><td>Domain labels and knowledge-type labels for a segment, with source (LLM or human), rater id and timestamp</td><td>Labelling service, annotators</td></tr>
+          <tr><td>Prediction</td><td>Per-label probabilities and a knowledge-bearing flag for a segment, tied to a model version and run id</td><td>Classification service</td></tr>
+          <tr><td>Model artefact</td><td>Weights, training config, metrics, dataset versions and model card</td><td>Experiment runner</td></tr>
+          <tr><td>Knowledge card</td><td>Typed summary of a decision, procedure, domain fact or context with evidence and provenance</td><td>Extraction engine</td></tr>
+          <tr><td>Embedding</td><td>Vector representation of a card for semantic search</td><td>Storage layer</td></tr>
+          <tr><td>Relationship</td><td>Edge between problem, decision, tool and domain nodes</td><td>Storage layer</td></tr>
+          <tr><td>Query and answer</td><td>A successor's question, retrieved cards, generated answer and citations</td><td>Query agent</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>10. Interfaces Between Components</h2>
+      <table class="tbl">
+        <thead><tr><th style="width:30%">Interface</th><th>Contract</th></tr></thead>
+        <tbody>
+          <tr><td>Loader → Filter</td><td>Conversation records in a shared schema; loaders never filter</td></tr>
+          <tr><td>Preprocessor → Labelling and Modelling</td><td>Segment records with stable ids and conversation id, so splits can be made at conversation level</td></tr>
+          <tr><td>Labelling → Modelling</td><td>Label records keyed by segment id, with source flag so gold labels are never mixed into training</td></tr>
+          <tr><td>Modelling → Registry → Classification service</td><td>A model version id; the service never trains</td></tr>
+          <tr><td>Classification service → Extraction</td><td>Segments with probabilities above a threshold and their labels</td></tr>
+          <tr><td>Extraction → Repository</td><td>Knowledge cards with mandatory source segment ids; cards without provenance are rejected</td></tr>
+          <tr><td>Repository → Retrieval → Agent</td><td>Ranked cards with scores, labels and citations</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">Lock the Conversation, Segment, Label and Knowledge card schemas in week one. Everything else parallelises after that.</div>
+    </section>
+
+    <section class="section">
+      <h2>11. Design Constraints for the PoC</h2>
+      <ul>
+        <li>Public corpora only for training; own logs only for the transfer test, with consent</li>
+        <li>Models must train on a free GPU or a laptop CPU within hours</li>
+        <li>Human gold set is the only basis for reported results</li>
+        <li>Vector index first; the graph stays in-process and lightweight unless the retrieval evaluation shows it is needed</li>
+        <li>Cloud LLM used only for labelling and extraction, within the stated budget</li>
+        <li>Dashboard and live capture are out of scope for this iteration</li>
+      </ul>
+      <div class="callout warn">The knowledge graph and MCP delivery are kept because they are part of the group's agreed design and the storage sub-topic. They are implemented thinly so they do not compete for time with the modelling work.</div>
+    </section>
+
+    <section class="section">
+      <h2>12. Security, Ethics and Privacy Considerations</h2>
+      <ul>
+        <li>Use only public corpora whose licences permit research use, and cite them</li>
+        <li>Do not attempt to identify any user in the public corpora</li>
+        <li>Own logs: written consent per member, redaction of secrets and personal data before labelling, deletion after the study</li>
+        <li>No raw conversation content is sent to a cloud LLM from own logs; only the public-trained model runs on them</li>
+        <li>Frame the system as knowledge retention and onboarding support, never as employee monitoring</li>
+        <li>Record provenance so that any card can be traced and removed on request</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>13. Recommended Final Architecture Outcome</h2>
+      <p>
+        The final system demonstrates a complete lifecycle: public developer–LLM corpora are filtered and labelled, a small classifier is trained and shown
+        to approach an LLM teacher on human-labelled data, its transfer to real agentic logs is measured, and its output drives extraction, storage, retrieval
+        and delivery of knowledge to a successor. This satisfies the MSc research objective with a measurable contribution, and leaves live capture and a
+        dashboard as clearly stated future work.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>14. References</h2>
+      <ol class="refs">
+        <li>Anthropic (2024) <em>Introducing the Model Context Protocol</em>. Available at: https://modelcontextprotocol.io/ (Accessed: 13 October 2026).</li>
+        <li>Broder, A.Z. (1997) 'On the resemblance and containment of documents', in <em>Proceedings of Compression and Complexity of Sequences</em>. IEEE, pp. 21–29.</li>
+        <li>Edge, D. et al. (2024) 'From local to global: a graph RAG approach to query-focused summarization', arXiv preprint, arXiv:2404.16130.</li>
+        <li>Gilardi, F., Alizadeh, M. and Kubli, M. (2023) 'ChatGPT outperforms crowd workers for text-annotation tasks', <em>PNAS</em>, 120(30).</li>
+        <li>Grootendorst, M. (2022) 'BERTopic: neural topic modeling with a class-based TF-IDF procedure', arXiv preprint, arXiv:2203.05794.</li>
+        <li>Hinton, G., Vinyals, O. and Dean, J. (2015) 'Distilling the knowledge in a neural network', arXiv preprint, arXiv:1503.02531.</li>
+        <li>Lewis, P. et al. (2020) 'Retrieval-augmented generation for knowledge-intensive NLP tasks', <em>Advances in Neural Information Processing Systems</em>, 33, pp. 9459–9474.</li>
+        <li>Mitchell, M. et al. (2019) 'Model cards for model reporting', in <em>Proceedings of FAT* 2019</em>. ACM, pp. 220–229.</li>
+        <li>Nonaka, I. (1994) 'A dynamic theory of organizational knowledge creation', <em>Organization Science</em>, 5(1), pp. 14–37.</li>
+        <li>Reimers, N. and Gurevych, I. (2019) 'Sentence-BERT: sentence embeddings using Siamese BERT-networks', in <em>Proceedings of EMNLP-IJCNLP 2019</em>. ACL.</li>
+        <li>Xiao, T., Treude, C., Hata, H. and Matsumoto, K. (2024) 'DevGPT: studying developer-ChatGPT conversations', in <em>Proceedings of MSR 2024</em>. ACM.</li>
+        <li>Zhao, W. et al. (2024) 'WildChat: 1M ChatGPT interaction logs in the wild', in <em>Proceedings of ICLR 2024</em>. arXiv:2405.01470.</li>
+      </ol>
+    </section>
+  </div>
+</body>
+</html>
