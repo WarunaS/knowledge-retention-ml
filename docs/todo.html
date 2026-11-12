@@ -46,12 +46,12 @@
     <header class="header">
       <h1>Implementation To-Do List</h1>
       <p class="subtitle">knowledge-retention-ml · code still to build, in ML lifecycle order</p>
-      <p class="meta">Updated 11 November 2026 (Stage 4) · Matches plan v2.1 (research_project_plan, research_architecture_plan, research_technical_plan)</p>
+      <p class="meta">Updated 11 November 2026 (Stage 4b) · Matches plan v2.1 (research_project_plan, research_architecture_plan, research_technical_plan)</p>
     </header>
 
     <section class="section">
       <h2>1. Code to build</h2>
-      <p>Done so far: <code>schema.py</code>, <code>label/taxonomy.py</code>, <code>config.py</code>, <code>io.py</code>, Stage 2 (Collect), Stage 3 (Clean), Stage 4 (Explore) and their tests. Rows marked ⬜ are still stubs.</p>
+      <p>Done so far: <code>schema.py</code>, <code>label/taxonomy.py</code>, <code>config.py</code>, <code>io.py</code>, Stages 2 (Collect), 3 (Clean), 4 (Explore), 4b (Label code) and their tests. Rows marked ⬜ are still stubs.</p>
       <div class="table-wrap">
         <table class="tbl">
           <thead><tr><th style="width:22%">Stage</th><th>Files</th><th style="width:10%">Status</th></tr></thead>
@@ -59,8 +59,8 @@
             <tr><td>2 Collect</td><td>wildchat, devgpt, trajectories, own_logs, manifest <span class="add">+ dataset IDs in config</span><br><small>Done 11 Nov: loaders, collect pipeline, pinned dataset versions, consent template, notebook 02. 26 offline tests + 3 live tests pass; end-to-end run on real data (WildChat, SWE-agent, OpenHands) and a real DevGPT snapshot file checked.</small></td><td class="status">✅</td></tr>
             <tr><td>3 Clean</td><td>filters, dedup, normalise, segment, pipeline <span class="add">+ redact + precision-check sample</span><br><small>Done 11 Nov: keyword relevance (programming + requirements), language/toxicity/min-exchanges filters, MinHash dedup across sources, normalisation, exchange-based segments (max 10 per conversation), own-log redaction, 200-item precision CSV, step counts in cleaning_report.json, notebook 03, 17 new tests. Real-data run: ~1,100 conversations cleaned in 1.3 s.</small></td><td class="status">✅</td></tr>
             <tr><td>4 Explore</td><td>explore.py<br><small>Done 11 Nov: per-source tables (sizes, projects, turns, lengths, tools, relevance), 4 plots, BERTopic topics with keyword domain hints and a taxonomy coverage table, knowledge-share function for after labelling, notebook 04, 8 new tests. Real-data run: 1,152 segments, 16 topics in 22 s. Also fixed Stage 2 sampling: agent runs now spread across repositories (SWE-agent 4 → 31 projects per 40 runs).</small></td><td class="status">✅</td></tr>
-            <tr class="next"><td>4b Label</td><td>codebook definitions, llm_labeller, agreement <span class="add">+ gold tooling (export/import/adjudicate) + noise check + LLM in config</span></td><td class="status">⬜<span class="tag">next</span></td></tr>
-            <tr><td>6 Split</td><td>split.py</td><td class="status">⬜</td></tr>
+            <tr class="next"><td>4b Label</td><td>codebook definitions, llm_labeller, agreement <span class="add">+ gold tooling (export/import/adjudicate) + noise check + LLM in config</span><br><small>Code done 11 Nov: full codebook v1 (+ general_programming domain), gold/pool sampling (gold conversations excluded from training), Claude labeller (Batch API for weak labels, sync with latency for teacher T), rater sheets, Cohen's κ, adjudication, noise check, notebook 05, 17 new tests with a fake client (no API calls). Dry run on real data: 400 gold (100 per source), requests valid. Still to do by people: run the paid labelling, label the gold set (2 raters).</small></td><td class="status">✅</td></tr>
+            <tr class="next"><td>6 Split</td><td>split.py</td><td class="status">⬜<span class="tag">next</span></td></tr>
             <tr><td>5 Features</td><td>features.py</td><td class="status">⬜</td></tr>
             <tr><td>7–8 Models</td><td>baselines, finetune, setfit_run, teacher <span class="add">(includes 10 Tune, ablations A1 and A2)</span></td><td class="status">⬜</td></tr>
             <tr><td>9 Evaluate</td><td>metrics, stats</td><td class="status">⬜</td></tr>
@@ -70,7 +70,7 @@
             <tr><td>App</td><td>extraction, storage, retrieval, agent, mcp_server, handover</td><td class="status">⬜</td></tr>
             <tr><td>App evaluation</td><td>retrieval eval (Recall@k, MRR), successor task</td><td class="status">⬜</td></tr>
             <tr class="optional"><td>(optional)</td><td>Streamlit knowledge map</td><td class="status">⬜</td></tr>
-            <tr><td>Every stage</td><td>notebook filled in + tests <small>(Stages 2–4 done)</small></td><td class="status">🟨</td></tr>
+            <tr><td>Every stage</td><td>notebook filled in + tests <small>(Stages 2–4b done)</small></td><td class="status">🟨</td></tr>
           </tbody>
         </table>
       </div>

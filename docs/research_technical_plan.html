@@ -292,7 +292,7 @@
         <div class="tech"><strong>Text processing</strong>spaCy, regex, Hugging Face tokenizers, langdetect or fastText language id</div>
         <div class="tech"><strong>Deduplication</strong>datasketch MinHash LSH</div>
         <div class="tech"><strong>Topic modelling</strong>BERTopic with UMAP and HDBSCAN</div>
-        <div class="tech"><strong>Weak labelling</strong>Claude or GPT API with structured JSON output</div>
+        <div class="tech"><strong>Weak labelling</strong>Anthropic Python SDK, Claude Opus 5.5, structured JSON output, Message Batches API</div>
         <div class="tech"><strong>Human annotation</strong>Label Studio, or CSV with written guidelines</div>
         <div class="tech"><strong>Classical ML baselines</strong>scikit-learn: TF-IDF, logistic regression, linear SVM, class weights</div>
         <div class="tech"><strong>Embeddings</strong>sentence-transformers, all-MiniLM-L6-v2 or bge-small</div>
@@ -331,7 +331,7 @@
         <div class="card">
           <h3>Taxonomy</h3>
           <ul>
-            <li><strong>Domain, multi-label:</strong> mobile · web frontend · backend and APIs · data and analytics · cloud and infrastructure · DevOps and CI/CD · security · QA and testing · architecture and design · business and requirements · other</li>
+            <li><strong>Domain, multi-label:</strong> mobile · web frontend · backend and APIs · data and analytics · cloud and infrastructure · DevOps and CI/CD · security · QA and testing · architecture and design · business and requirements · general programming · other</li>
             <li><strong>Not labels:</strong> person, role and project are recorded at ingestion and never predicted</li>
             <li><strong>Knowledge type, multi-label:</strong> domain · procedural · decision · contextual · none</li>
           </ul>
@@ -339,7 +339,7 @@
         <div class="card">
           <h3>Weak labels</h3>
           <ul>
-            <li>About ten thousand segments labelled by an LLM using the codebook, structured output, temperature zero</li>
+            <li>About ten thousand segments labelled by Claude Opus 5.5 using the codebook as a cached system prompt, schema-constrained JSON output and low effort, through the Message Batches API at half price; estimated $35–$105 in total</li>
             <li>Raw responses stored; a random hundred hand-checked to estimate label noise</li>
             <li>Repository metadata from DevGPT used as a second weak signal for domain</li>
           </ul>
@@ -356,7 +356,7 @@
           <h3>Splits</h3>
           <ul>
             <li>Training and validation drawn from weak-labelled segments, split by conversation id</li>
-            <li>Test is the gold set only; gold segments are excluded from training</li>
+            <li>Test is the gold set only; every conversation that contains a gold segment is excluded from training</li>
             <li>Transfer set is scored once with the final model</li>
           </ul>
         </div>

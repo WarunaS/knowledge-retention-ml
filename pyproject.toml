@@ -18,8 +18,8 @@ dependencies = [
 clean = ["datasketch>=1.6", "langdetect>=1.0.9"]
 # Stage 4: explore
 explore = ["bertopic>=0.16", "matplotlib>=3.8", "seaborn>=0.13"]
-# Stage 4b: label (weak labels from an LLM; pick one provider)
-label = ["anthropic", "openai"]
+# Stage 4b: label (weak labels and the teacher run with Claude)
+label = ["anthropic>=2.8"]
 # Stages 5-12: features, models, evaluation
 ml = [
     "scikit-learn>=1.4",

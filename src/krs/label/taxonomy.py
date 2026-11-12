@@ -24,6 +24,9 @@ class Domain(str, Enum):
     # Business analyst knowledge: requirements, business rules, stakeholder decisions.
     # Expected to be rare in public developer corpora; report its scores with that caveat.
     BUSINESS_REQUIREMENTS = "business_requirements"
+    # Added 11 Nov 2026 after Stage 4: 68% of topic clusters (library internals, repo navigation,
+    # language-level code) matched no domain. Everyday code work that belongs to no specific stack.
+    GENERAL_PROGRAMMING = "general_programming"
     OTHER = "other"
 
 

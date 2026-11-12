@@ -53,18 +53,30 @@ DOMAIN_KEYWORDS: dict[str, tuple[str, ...]] = {
     Domain.BUSINESS_REQUIREMENTS.value: ("user story", "requirement", "stakeholder", "acceptance criteria",
                                          "business rule", "use case", "backlog"),
 }
-_DOMAIN_PATTERNS = {
-    d: re.compile(r"(?<![a-z0-9])(?:" + "|".join(re.escape(k) for k in kws) + r")(?![a-z0-9])")
-    for d, kws in DOMAIN_KEYWORDS.items()
-}
+# Used only when no specific domain matches (codebook: prefer a specific domain).
+GENERAL_PROGRAMMING_KEYWORDS = ("function", "class", "variable", "loop", "recursion", "algorithm", "refactor",
+                                "exception", "traceback", "regex", "string", "list", "dict", "module", "import",
+                                "ast", "def", "return", "cli", "argument", "type hint", "compile")
+
+
+def _pattern(words: tuple[str, ...]) -> re.Pattern[str]:
+    return re.compile(r"(?<![a-z0-9])(?:" + "|".join(re.escape(k) for k in words) + r")(?![a-z0-9])")
+
+
+_DOMAIN_PATTERNS = {d: _pattern(kws) for d, kws in DOMAIN_KEYWORDS.items()}
+_GENERAL = _pattern(GENERAL_PROGRAMMING_KEYWORDS)
 
 
 def domain_hints(text: str) -> list[str]:
-    """Domains whose keywords appear in the text, strongest first; ['other'] if none."""
+    """Specific domains whose keywords appear, strongest first; else general_programming; else other."""
     low = text.lower()
     scores = {d: len(set(p.findall(low))) for d, p in _DOMAIN_PATTERNS.items()}
     hits = sorted((d for d, s in scores.items() if s), key=lambda d: -scores[d])
-    return hits or [Domain.OTHER.value]
+    if hits:
+        return hits
+    if len(set(_GENERAL.findall(low))) >= 2:
+        return [Domain.GENERAL_PROGRAMMING.value]
+    return [Domain.OTHER.value]
 
 
 # --------------------------------------------------------------------------- 1. distributions

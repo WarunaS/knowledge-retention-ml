@@ -85,6 +85,8 @@ def test_domain_hints():
     assert explore.domain_hints("Fix the Dockerfile in the GitHub Actions pipeline")[0] == "devops_cicd"
     assert explore.domain_hints("Write a user story with acceptance criteria")[0] == "business_requirements"
     assert explore.domain_hints("banana bread recipe") == ["other"]
+    assert explore.domain_hints("refactor this recursion into a loop and return a list") == ["general_programming"]
+    assert explore.domain_hints("pytest fixture with a loop and a list")[0] == "qa_testing"  # specific wins
     assert "web_frontend" not in explore.domain_hints("random reactive candor")  # word boundaries
 
 
