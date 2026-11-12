@@ -33,6 +33,8 @@ ml = [
 ]
 # Application plane (after stage 14): extraction, storage, retrieval, agent
 app = ["fastapi>=0.110", "uvicorn>=0.29", "httpx>=0.27", "networkx>=3.2", "mcp>=2.3", "anthropic>=2.8"]   # vectors: exact numpy search, no vector DB needed at this scale
+# Optional demo: one-screen Streamlit dashboard (Ask, Handover pack, Knowledge map, Model results)
+dashboard = ["streamlit>=1.40"]
 dev = ["pytest>=8.0", "ruff>=0.4", "jupyter>=1.0"]
 
 [build-system]

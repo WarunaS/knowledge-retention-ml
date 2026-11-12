@@ -12,12 +12,14 @@
 | 7-8 | Choose / train | `krs/models/` | `07_…`, `08_train` |
 | 9 | Evaluate | `krs/evaluate/` | `09_evaluate` |
 | 10 | Tune (validation split only) | `krs/models/` | `08_train` |
-| 11 | Track | `krs/tracking.py` | - |
+| 11 | Track | `krs/tracking.py` | `12_register` |
 | 12 | Register / version | `krs/registry.py` | `12_register` |
 | 13 | Deploy | **skipped** | - |
 | 14 | Inference (offline batch) | `krs/inference.py` | `14_inference` |
 | 15-18 | Monitor / drift / retrain | X1 transfer test only: `krs/evaluate/transfer.py` | `16_transfer_test` |
-| - | Application plane: agent, MCP, handover packs, optional knowledge map | `krs/app/` | later |
+| - | Application plane: cards, store, ask-predecessor, REST, MCP, handover packs | `krs/app/` | `15_app` |
+| - | Application evaluation: card spot check, retrieval (Recall@k, MRR), successor task | `krs/evaluate/retrieval_eval.py`, `successor.py` | `17_app_eval` |
+| - | Optional demo screen (Streamlit) | `krs/app/dashboard.py`, `knowledge_map.py` | `streamlit run` |
 
 Rules: dedup before split · split by conversation · fit features on train only ·
 tune on validation only · report on gold only · X1 runs once.

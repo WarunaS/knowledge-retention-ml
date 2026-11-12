@@ -46,12 +46,12 @@
     <header class="header">
       <h1>Implementation To-Do List</h1>
       <p class="subtitle">knowledge-retention-ml · code still to build, in ML lifecycle order</p>
-      <p class="meta">Updated 12 November 2026 (App evaluation) · Matches plan v2.1 (research_project_plan, research_architecture_plan, research_technical_plan)</p>
+      <p class="meta">Updated 12 November 2026 (all code done) · Matches plan v2.1 (research_project_plan, research_architecture_plan, research_technical_plan)</p>
     </header>
 
     <section class="section">
       <h2>1. Code to build</h2>
-      <p>Done so far: <code>schema.py</code>, <code>label/taxonomy.py</code>, <code>config.py</code>, <code>io.py</code>, Stages 2 (Collect), 3 (Clean), 4 (Explore), 4b (Label code), 6 (Split), 5 (Features), 7–8 (Models), 9 (Evaluate), 11–12 (Track/Register), 14 (Inference), X1 (Transfer), the App, App evaluation and their tests. Rows marked ⬜ are still stubs.</p>
+      <p>Done so far: <code>schema.py</code>, <code>label/taxonomy.py</code>, <code>config.py</code>, <code>io.py</code>, Stages 2 (Collect), 3 (Clean), 4 (Explore), 4b (Label code), 6 (Split), 5 (Features), 7–8 (Models), 9 (Evaluate), 11–12 (Track/Register), 14 (Inference), X1 (Transfer), the App, App evaluation, the optional dashboard and their tests. All code rows are done. Rows marked ⬜ are still stubs.</p>
       <div class="table-wrap">
         <table class="tbl">
           <thead><tr><th style="width:22%">Stage</th><th>Files</th><th style="width:10%">Status</th></tr></thead>
@@ -69,8 +69,8 @@
             <tr><td>Drift check (X1)</td><td>evaluate/transfer.py<br><small>Done 12 Nov: own-log labelling sheet export/import, X1 with run-once lock (forced re-run needs a recorded reason), macro-F1 drop with 95% CI against all gold and agentic gold, per-label F1, label-frequency and length shift, report without text; notebook 16 (run locally), 5 new tests. Real-size check with stand-in data: 9.6 s, no false drop. Still needs: consented own logs, labelled by hand.</small></td><td class="status">✅</td></tr>
             <tr class="next"><td>App</td><td>extraction, storage, retrieval, agent, mcp_server, handover<br><small>Done 12 Nov: card extraction (Claude for public sources, local extractive for own logs - never sent to the cloud), faithfulness check (verbatim evidence + supported summary words), SQLite + exact vector search + NetworkX graph, GDPR delete across all three, filtered retrieval with one-hop expansion, ask-predecessor with citation checking, FastAPI REST, MCP server (SDK 2.x), handover packs, notebook 15, 13 new tests. Real run: 200 segments -> 200 cards, store, search, ask, handover, REST, MCP in 8 s (local backends, no API cost).</small></td><td class="status">✅</td></tr>
             <tr><td>App evaluation</td><td>retrieval eval (Recall@k, MRR), successor task<br><small>Done 12 Nov: card faithfulness spot-check sheet + rate with 95% CI; hand-verified question sheet (own-words questions), Recall@k / hit / MRR for semantic, filtered and filtered+graph with bootstrap CIs and a paired "filters help" test; successor task with counterbalanced participant sheets, blind rating sheet and private key, within-participant Wilcoxon analysis marked indicative; notebook 17, 6 new tests. Real run on 200 cards: 50 questions evaluated in 0.7 s. Still needs people: question writing, card check, participants, rater.</small></td><td class="status">✅</td></tr>
-            <tr class="optional next"><td>(optional)</td><td>Streamlit knowledge map</td><td class="status">⬜<span class="tag">next</span></td></tr>
-            <tr><td>Every stage</td><td>notebook filled in + tests <small>(Stages 2–6 done)</small></td><td class="status">🟨</td></tr>
+            <tr class="optional"><td>(optional)</td><td>Streamlit knowledge map<br><small>Done 12 Nov: read-only demo with Ask, Handover pack, Knowledge map (coverage, single-person dependency without naming anyone, stale areas) and Model results tabs; local answers by default; separate optional install. 6 new tests incl. headless runs; real server started, served and stopped cleanly on 200 real cards.</small></td><td class="status">✅</td></tr>
+            <tr><td>Every stage</td><td>notebook filled in + tests<br><small>Audited 12 Nov: all 13 notebooks filled in (the only commented cell is the paid teacher run, on purpose); every module covered by tests (137 fast + 4 slow + 3 live); no stubs left.</small></td><td class="status">✅</td></tr>
           </tbody>
         </table>
       </div>

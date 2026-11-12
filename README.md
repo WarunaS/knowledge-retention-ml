@@ -36,6 +36,7 @@ Each notebook's first cell mounts Drive, clones this repo, installs it, and poin
 uv pip install -e ".[app]"
 uvicorn krs.app.agent:app                         # REST API, docs at http://localhost:8000/docs
 claude mcp add krs -- python -m krs.app.mcp_server # ask from inside Claude Code
+uv pip install -e ".[dashboard]" && streamlit run src/krs/app/dashboard.py   # optional demo screen
 ```
 Tools/endpoints: ask a question (answers cite `[card_id]`s), search cards, build a handover pack per
 project or person. Own-log cards are never sent to a cloud model.
