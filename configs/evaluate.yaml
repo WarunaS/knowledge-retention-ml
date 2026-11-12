@@ -1,0 +1,20 @@
+# Stage 9 - evaluation on the human gold set only. Outputs: results/eval/
+split: test
+runs: [B0, B1, B2, M1, M2, T, A1]
+
+bootstrap:
+  n: 1000                 # resamples
+  by: conversation        # cluster bootstrap: segments of one conversation are correlated
+  seed: 42
+
+comparisons:              # paired bootstrap on the same resamples, per axis
+  - {a: M1, b: B2, hypothesis: H1, test: better}
+  - {a: M1, b: B1, hypothesis: H1, test: better}
+  - {a: M1, b: T, hypothesis: H2, test: within, margin: 0.05}   # M1 within 5 F1 points of the teacher
+  - {a: M1, b: A1, hypothesis: H3, test: better}                # context helps
+
+confusion_for: [M1, B2]
+
+learning_curve:
+  run: A2
+  sizes: [1000, 2000, 5000, 10000]

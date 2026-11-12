@@ -435,7 +435,7 @@
         <thead><tr><th style="width:26%">Component</th><th>Measure</th><th style="width:30%">Answers</th></tr></thead>
         <tbody>
           <tr><td>Taxonomy</td><td>Cohen's κ between two raters on the overlap set; refinement loop if κ is below 0.6</td><td>Is the taxonomy separable?</td></tr>
-          <tr><td>Classifier</td><td>Macro-F1, per-class precision and recall, confusion matrix, bootstrap confidence intervals, paired test against the best baseline</td><td>RQ1, H1, H2</td></tr>
+          <tr><td>Classifier</td><td>Macro-F1, per-class precision and recall, confusion matrix, conversation-level bootstrap confidence intervals, paired bootstrap against the baselines, non-inferiority against the teacher</td><td>RQ1, H1, H2</td></tr>
           <tr><td>Ablations</td><td>With and without the context turn; learning curve over training-set size</td><td>H3, labelling budget</td></tr>
           <tr><td>Transfer</td><td>Macro-F1 drop from public test set to consented own logs</td><td>RQ3</td></tr>
           <tr><td>Extraction</td><td>Faithfulness of cards to source segments, human spot check</td><td>Card quality</td></tr>

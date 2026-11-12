@@ -380,7 +380,7 @@
           <tr><td>X1</td><td>Final M1 on consented own logs</td><td>Transfer gap</td><td>RQ3</td></tr>
         </tbody>
       </table>
-      <p style="margin-top:10px">Metrics: macro-F1 and per-class precision and recall on the gold set, confusion matrices, bootstrap 95% confidence intervals over segments, and a paired test between M1 and B2. Model selection uses the weak-label validation split; reported numbers come only from the gold set. Tuning (Stage 10) is done on validation only: the regularisation strength of the baselines, the best epoch of M1, and one decision threshold per label; predicted labels follow the codebook rules (none alone, at least one label per axis).</p>
+      <p style="margin-top:10px">Metrics: macro-F1 and per-class precision and recall on the gold set, confusion matrices, and bootstrap 95% confidence intervals that resample whole conversations (segments of one conversation are correlated). Comparisons use a paired bootstrap on the same resamples: M1 against B1 and B2 (H1), M1 against A1 (H3), and for H2 a non-inferiority check that the lower bound of M1 minus T is above −0.05. Model selection uses the weak-label validation split; reported numbers come only from the gold set. Tuning (Stage 10) is done on validation only: the regularisation strength of the baselines, the best epoch of M1, and one decision threshold per label; predicted labels follow the codebook rules (none alone, at least one label per axis).</p>
     </section>
 
     <section class="section">
@@ -495,7 +495,7 @@
           <h3>Classifier</h3>
           <ul>
             <li>Macro-F1, per-class precision and recall, confusion matrices</li>
-            <li>Bootstrap confidence intervals; paired test M1 versus B2</li>
+            <li>Conversation-level bootstrap confidence intervals; paired bootstrap M1 versus B1, B2 and A1; non-inferiority of M1 against the teacher (H2)</li>
             <li>Learning curve and context ablation</li>
             <li>Cost and latency per thousand segments, M1 versus the LLM teacher</li>
           </ul>
