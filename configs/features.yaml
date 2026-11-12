@@ -1,0 +1,21 @@
+# Stage 5 - features. Anything fitted (TF-IDF) is fitted on the train split only. Outputs: data/features/
+with_context: [true, false]     # both views: with the previous exchange, and without it (ablation A1)
+
+tfidf:                          # baseline B1
+  max_features: 50000
+  ngram_range: [1, 2]
+  min_df: 2
+  sublinear_tf: true
+  lowercase: true
+
+embeddings:                     # baseline B2 - fixed pre-trained model, nothing fitted
+  enabled: true
+  model: sentence-transformers/all-MiniLM-L6-v2
+  batch_size: 64                # Colab GPU for the full data; small samples only on a laptop
+  normalize: true
+
+tokenizer:                      # token-length check for the fine-tuned model M1
+  enabled: true
+  model: microsoft/deberta-v3-small
+  max_length: 512
+  sample: 2000                  # train segments measured

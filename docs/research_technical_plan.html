@@ -228,6 +228,7 @@
           <h3>4.6 Modelling and experiments</h3>
           <ul>
             <li>Config-driven experiment runner with fixed seeds and conversation-level splits</li>
+            <li>Features built after the split: TF-IDF fitted on training texts only, fixed sentence embeddings, both with and without the context turn; token lengths checked against the 512-token model limit (inputs are cut context-first)</li>
             <li>Baselines, fine-tuned multi-label transformer, SetFit few-shot variant</li>
             <li>Ablations, learning curve, teacher comparison, metrics written per run</li>
           </ul>

@@ -28,6 +28,8 @@ ml = [
     "transformers>=4.40",
     "torch>=2.2",
     "setfit>=1.0",
+    "sentencepiece>=0.2",   # DeBERTa-v3 tokenizer
+    "protobuf>=4.0",        # needed by transformers to read the sentencepiece model
 ]
 # Application plane (after stage 14): extraction, storage, retrieval, agent
 app = ["fastapi>=0.110", "uvicorn>=0.29", "chromadb>=0.5", "networkx>=3.2", "mcp>=1.0"]

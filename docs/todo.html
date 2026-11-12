@@ -46,12 +46,12 @@
     <header class="header">
       <h1>Implementation To-Do List</h1>
       <p class="subtitle">knowledge-retention-ml · code still to build, in ML lifecycle order</p>
-      <p class="meta">Updated 11 November 2026 (Stage 6) · Matches plan v2.1 (research_project_plan, research_architecture_plan, research_technical_plan)</p>
+      <p class="meta">Updated 11 November 2026 (Stage 5) · Matches plan v2.1 (research_project_plan, research_architecture_plan, research_technical_plan)</p>
     </header>
 
     <section class="section">
       <h2>1. Code to build</h2>
-      <p>Done so far: <code>schema.py</code>, <code>label/taxonomy.py</code>, <code>config.py</code>, <code>io.py</code>, Stages 2 (Collect), 3 (Clean), 4 (Explore), 4b (Label code), 6 (Split) and their tests. Rows marked ⬜ are still stubs.</p>
+      <p>Done so far: <code>schema.py</code>, <code>label/taxonomy.py</code>, <code>config.py</code>, <code>io.py</code>, Stages 2 (Collect), 3 (Clean), 4 (Explore), 4b (Label code), 6 (Split), 5 (Features) and their tests. Rows marked ⬜ are still stubs.</p>
       <div class="table-wrap">
         <table class="tbl">
           <thead><tr><th style="width:22%">Stage</th><th>Files</th><th style="width:10%">Status</th></tr></thead>
@@ -61,8 +61,8 @@
             <tr><td>4 Explore</td><td>explore.py<br><small>Done 11 Nov: per-source tables (sizes, projects, turns, lengths, tools, relevance), 4 plots, BERTopic topics with keyword domain hints and a taxonomy coverage table, knowledge-share function for after labelling, notebook 04, 8 new tests. Real-data run: 1,152 segments, 16 topics in 22 s. Also fixed Stage 2 sampling: agent runs now spread across repositories (SWE-agent 4 → 31 projects per 40 runs).</small></td><td class="status">✅</td></tr>
             <tr class="next"><td>4b Label</td><td>codebook definitions, llm_labeller, agreement <span class="add">+ gold tooling (export/import/adjudicate) + noise check + LLM in config</span><br><small>Code done 11 Nov: full codebook v1 (+ general_programming domain), gold/pool sampling (gold conversations excluded from training), Claude labeller (Batch API for weak labels, sync with latency for teacher T), rater sheets, Cohen's κ, adjudication, noise check, notebook 05, 17 new tests with a fake client (no API calls). Dry run on real data: 400 gold (100 per source), requests valid. Still to do by people: run the paid labelling, label the gold set (2 raters).</small></td><td class="status">✅</td></tr>
             <tr><td>6 Split</td><td>split.py<br><small>Done 11 Nov: train/validation from weak labels split by conversation within each source, test = gold only, transfer = own logs, gold conversations removed again, automatic leakage check, split report with label balance, notebook 06, 6 new tests. Real-data check: 400 test segments, no leaks.</small></td><td class="status">✅</td></tr>
-            <tr class="next"><td>5 Features</td><td>features.py</td><td class="status">⬜<span class="tag">next</span></td></tr>
-            <tr><td>7–8 Models</td><td>baselines, finetune, setfit_run, teacher <span class="add">(includes 10 Tune, ablations A1 and A2)</span></td><td class="status">⬜</td></tr>
+            <tr><td>5 Features</td><td>features.py<br><small>Done 11 Nov: label matrices in fixed taxonomy order, TF-IDF fitted on train only (B1), MiniLM sentence embeddings (B2), both with and without context (A1), DeBERTa token-length report, notebook 07 (features part), 5 new tests. Real-data run: 489 segments in 9 s. Finding: 54% of inputs with context exceed 512 tokens - Stage 8 must cut context first.</small></td><td class="status">✅</td></tr>
+            <tr class="next"><td>7–8 Models</td><td>baselines, finetune, setfit_run, teacher <span class="add">(includes 10 Tune, ablations A1 and A2)</span></td><td class="status">⬜<span class="tag">next</span></td></tr>
             <tr><td>9 Evaluate</td><td>metrics, stats</td><td class="status">⬜</td></tr>
             <tr><td>11–12 Track/Register</td><td>tracking.py, registry.py <span class="add">(+ model card)</span></td><td class="status">⬜</td></tr>
             <tr><td>14 Inference</td><td>inference.py</td><td class="status">⬜</td></tr>

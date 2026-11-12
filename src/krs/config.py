@@ -43,6 +43,10 @@ class Paths:
         return self.root / "splits"
 
     @property
+    def features(self) -> Path:  # stage 5 output: feature matrices and label matrices per split
+        return self.root / "features"
+
+    @property
     def manifest(self) -> Path:
         return self.raw / "manifest.json"
 
