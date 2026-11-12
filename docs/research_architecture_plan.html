@@ -207,8 +207,8 @@
           <h3>4.2 Data preparation layer</h3>
           <ul>
             <li>Language, toxicity and turn-count filters</li>
-            <li>Relevance filter for technical and requirements conversations, with a reported precision estimate</li>
-            <li>MinHash near-duplicate removal, normalisation, segmentation into turn windows with one turn of context</li>
+            <li>Keyword relevance filter for technical and requirements conversations, with a hand-checked precision estimate</li>
+            <li>Redaction of own logs, MinHash near-duplicate removal, normalisation, segmentation into exchanges with the previous exchange as context</li>
           </ul>
         </div>
         <div class="card">
@@ -285,7 +285,7 @@
         <div class="card">
           <h3>5.2 Filter and preprocessor</h3>
           <ul>
-            <li>Rule filters plus a zero-shot relevance classifier</li>
+            <li>Rule filters and keyword relevance; a zero-shot classifier only if hand-checked precision is low</li>
             <li>Deduplication, normalisation, segmentation, tokenisation checks</li>
           </ul>
         </div>
@@ -421,7 +421,7 @@
           <tr><td>Conversation</td><td>A full dialogue or agent run with source dataset, licence, modality, ordered turns, and author, role, project and date where known</td><td>Corpus loader</td></tr>
           <tr><td>Person, role, project</td><td>Metadata recorded at ingestion from the repository or team directory; pseudonymous author ids; never predicted by a model</td><td>Corpus loader</td></tr>
           <tr><td>Turn</td><td>A single user, assistant or tool message with role, content and optional tool name</td><td>Corpus loader</td></tr>
-          <tr><td>Segment</td><td>A user–assistant pair plus one preceding pair as context; the unit of labelling and classification</td><td>Preprocessor</td></tr>
+          <tr><td>Segment</td><td>One exchange (a user–assistant pair, or a tool observation and the agent's next action) plus the previous exchange as context; the unit of labelling and classification</td><td>Preprocessor</td></tr>
           <tr><td>Label</td><td>Domain labels and knowledge-type labels for a segment, with source (LLM or human), rater id and timestamp</td><td>Labelling service, annotators</td></tr>
           <tr><td>Prediction</td><td>Per-label probabilities and a knowledge-bearing flag for a segment, tied to a model version and run id</td><td>Classification service</td></tr>
           <tr><td>Model artefact</td><td>Weights, training config, metrics, dataset versions and model card</td><td>Experiment runner</td></tr>

@@ -193,8 +193,8 @@
         <div class="card">
           <h3>4.2 Filtering</h3>
           <ul>
-            <li>English only, toxicity flag false, at least two user–assistant exchanges</li>
-            <li>Relevance: zero-shot classifier seeded with programming and requirements keywords; hand-check two hundred items and report precision</li>
+            <li>English only, toxicity flag false; at least two user–assistant exchanges for WildChat (single-question DevGPT shares are kept)</li>
+            <li>Relevance (WildChat): keyword rules for programming and requirements; hand-check two hundred kept items and report precision with a 95% interval; add a zero-shot classifier only if precision is low</li>
             <li>Keep agentic trajectories regardless of turn count since they are all technical</li>
           </ul>
         </div>
@@ -203,7 +203,8 @@
           <ul>
             <li>MinHash near-duplicate removal at conversation level</li>
             <li>Whitespace and unicode normalisation; keep code blocks; drop system messages</li>
-            <li>Segment into user–assistant pairs with one preceding pair as context; truncate to the model limit</li>
+            <li>Segment into exchanges with the preceding exchange as context: a user–assistant pair in chats, a tool observation and the agent's next action in agent runs; at most ten evenly spaced segments per conversation; truncate to the model limit</li>
+            <li>Own logs are redacted first: rule-based removal of secrets and personal data plus a team list of names; a human skim follows</li>
           </ul>
         </div>
         <div class="card">

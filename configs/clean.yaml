@@ -1,16 +1,32 @@
-# Stage 3 - filters and segmentation
+# Stage 3 - clean / prepare. Order: redact (own logs) -> normalise -> filters -> dedup -> segment.
 language: en
 drop_toxic: true
 min_exchanges: 2
+min_exchanges_apply_to: [wildchat]   # DevGPT rule is English + no duplicates (technical plan, section 6)
 exempt_agentic_from_min_exchanges: true
+
 relevance:
-  method: keywords+zero_shot
+  method: keywords          # zero-shot classifier only if the hand-checked precision is low
   keep: [programming, requirements]   # requirements keeps business-analyst conversations
+  apply_to: [wildchat]      # DevGPT, agent runs and own logs are developer work by construction
+  min_hits: 2               # distinct keywords needed (a code block or a strong requirements term is enough)
   precision_check_sample: 200
+
+redact:
+  sources: [own_logs]
+  extra_terms_file: own_logs/redact_terms.txt   # gitignored; names of people, clients, systems, one per line
+
+normalise:
+  tool_output_max_chars: 2000
+
 dedup:
   minhash_num_perm: 128
   threshold: 0.8
+  shingle_words: 5
+  max_chars: 5000
+
 segment:
   context_pairs: 1
   max_tokens: 512
-  tool_output_max_chars: 2000
+  chars_per_token: 4        # length cap in characters, so no tokenizer is needed here
+  max_segments_per_conversation: 10   # evenly spaced; stops long agent runs swamping chat data
