@@ -166,6 +166,16 @@ class Label(BaseModel):
         return KnowledgeType.NONE not in self.knowledge_types
 
 
+# --------------------------------------------------------------------------- stage 6: split
+
+
+class LabelledSegment(BaseModel):
+    """One row of a split file: the segment with its split set, and the label used for it."""
+
+    segment: Segment
+    label: Label
+
+
 # --------------------------------------------------------------------------- stage 14: inference
 
 

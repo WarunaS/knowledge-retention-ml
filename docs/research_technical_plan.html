@@ -355,7 +355,7 @@
         <div class="card">
           <h3>Splits</h3>
           <ul>
-            <li>Training and validation drawn from weak-labelled segments, split by conversation id</li>
+            <li>Training and validation drawn from weak-labelled segments, split by conversation id within each source (seeded, ten per cent of conversations to validation), with an automatic check that no conversation appears in two splits</li>
             <li>Test is the gold set only; every conversation that contains a gold segment is excluded from training</li>
             <li>Transfer set is scored once with the final model</li>
           </ul>

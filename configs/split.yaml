@@ -1,4 +1,7 @@
-# Stage 6 - conversation-level split; test = gold only
-group_key: conversation_id
-val_frac: 0.1
+# Stage 6 - split before any feature is fitted. Test = human gold set only.
+group_key: conversation_id     # segments of one conversation always stay together
+val_frac: 0.1                  # share of each source's conversations used for validation
 seed: 42
+weak_labels: weak.jsonl        # in data/labels/ - LLM labels -> train / validation
+gold_labels: gold.jsonl        # adjudicated human labels -> test
+transfer_labels: transfer.jsonl  # hand-labelled own logs -> transfer (optional, scored once)
