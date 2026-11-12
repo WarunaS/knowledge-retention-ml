@@ -188,6 +188,7 @@
             <li>Write a manifest with dataset version, date, licence and row counts</li>
             <li>One loader per dataset emitting the shared Conversation schema</li>
             <li>Fill author, role, project and date where the source provides them; project from the linked repository</li>
+            <li>Sample seeded random row groups rather than the first rows; agent-run files are sorted by repository, so take a few random runs from each row group to cover many projects</li>
           </ul>
         </div>
         <div class="card">
@@ -211,7 +212,7 @@
           <h3>4.4 Exploratory analysis</h3>
           <ul>
             <li>Distributions of turns, token lengths, sources and modalities</li>
-            <li>BERTopic clusters to describe themes and sanity-check the domain taxonomy</li>
+            <li>BERTopic clusters to describe themes and sanity-check the domain taxonomy: each topic gets a keyword domain hint, and a large share of topics with no matching domain points to a missing label</li>
             <li>Estimated share of knowledge-bearing segments from a labelled sample</li>
           </ul>
         </div>

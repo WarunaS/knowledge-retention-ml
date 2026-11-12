@@ -135,10 +135,20 @@ def load(
     limit: int | None = None,
     *,
     revision: str | None = None,
+    random_row_groups: bool = True,
+    seed: int = 42,
+    rows_per_group: int | None = None,
 ) -> Iterator[Conversation]:
-    """Read Conversations for `dataset` ('swe_agent' or 'openhands') from Hugging Face, in file order."""
+    """Read Conversations for `dataset` ('swe_agent' or 'openhands') from Hugging Face.
+
+    The files are sorted by repository, so reading in file order gives very few projects.
+    `random_row_groups` (default) visits row groups in a seeded random order, and `rows_per_group`
+    keeps only a few random rows from each, so the sample spreads across many repositories.
+    """
     if dataset not in HF_IDS:
         raise ValueError(f"unknown trajectory dataset {dataset!r}; expected one of {list(HF_IDS)}")
     to_conversation = _MAPPERS[dataset]
-    for row in iter_rows(HF_IDS[dataset], revision, limit):
+    rows = iter_rows(HF_IDS[dataset], revision, limit, random_row_groups=random_row_groups, seed=seed,
+                     rows_per_group=rows_per_group)
+    for row in rows:
         yield to_conversation(row)

@@ -1,0 +1,7 @@
+# Stage 4 - exploratory analysis. Outputs go to results/eda/.
+topics:
+  enabled: true
+  sample: 20000             # segments for BERTopic; use ~1000 on a laptop, 20000 on Colab (GPU)
+  embedding_model: sentence-transformers/all-MiniLM-L6-v2
+  min_topic_size: 30        # smallest cluster BERTopic reports as a topic
+  seed: 42

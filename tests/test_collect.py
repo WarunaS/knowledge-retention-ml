@@ -262,3 +262,30 @@ def test_unique_skips_repeated_ids():
     counter = {}
     out = list(unique([a, a, a], counter))
     assert len(out) == 1 and counter["duplicate_ids"] == 2
+
+
+# --------------------------------------------------------------------------- parquet reader sampling
+
+
+def test_iter_rows_rows_per_group_spreads_sample(tmp_path, monkeypatch):
+    import fsspec
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    from krs.collect import _hf
+
+    # one file, 4 row groups of 100 rows, sorted by repository like the SWE-agent files
+    repos = [f"repo{i // 100}" for i in range(400)]
+    table = pa.table({"repo": repos, "n": list(range(400))})
+    path = tmp_path / "train.parquet"
+    pq.write_table(table, path, row_group_size=100)
+    monkeypatch.setattr(_hf, "_fs", lambda: fsspec.filesystem("file"))
+    monkeypatch.setattr(_hf, "parquet_files", lambda repo, rev=None: [str(path)])
+
+    in_order = list(_hf.iter_rows("x", limit=20))
+    assert {r["repo"] for r in in_order} == {"repo0"}
+    spread = list(_hf.iter_rows("x", limit=20, random_row_groups=True, rows_per_group=5, seed=1))
+    assert len(spread) == 20 and len({r["repo"] for r in spread}) == 4
+    again = list(_hf.iter_rows("x", limit=20, random_row_groups=True, rows_per_group=5, seed=1))
+    assert [r["n"] for r in spread] == [r["n"] for r in again]  # reproducible
+    assert len({r["n"] for r in spread}) == 20  # no row twice

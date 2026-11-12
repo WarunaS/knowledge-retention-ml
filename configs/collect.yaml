@@ -19,11 +19,17 @@ datasets:
     revision: 68195a1450865274106246d0d0296a1d6807b88e
     licence: CC-BY-4.0
     limit: 5000             # of 80,036
+    random_row_groups: true # files are sorted by repository; sample across them for project diversity
+    rows_per_group: 60      # ~950 runs per row group; 60 random ones from each of ~84 groups
+    seed: 42
   openhands:
     hf_id: nebius/SWE-rebench-openhands-trajectories
     revision: 35455389ab51bf5e2306bfd436ef72d0f98bf882
     licence: CC-BY-4.0
     limit: 5000
+    random_row_groups: true
+    rows_per_group: null    # already ordered across repositories (38 projects in 40 runs); avoids reading all 2 GB
+    seed: 42
 
 # Own logs are NOT collected here. Run krs.collect.pipeline.run_own_logs locally with
 # own_logs/consent.yaml (gitignored; template in configs/consent.example.yaml).

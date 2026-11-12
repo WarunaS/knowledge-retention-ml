@@ -43,8 +43,11 @@ packages = ["src/krs"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-markers = ["network: needs internet access to the real datasets (run with -m network)"]
-addopts = "-m 'not network'"
+markers = [
+    "network: needs internet access to the real datasets (run with -m network)",
+    "slow: downloads a model or does heavy compute (run with -m slow)",
+]
+addopts = "-m 'not network and not slow'"
 
 [tool.ruff]
 line-length = 100

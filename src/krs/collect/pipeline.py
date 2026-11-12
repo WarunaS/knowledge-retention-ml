@@ -47,7 +47,14 @@ def _load(name: str, spec: dict[str, Any], raw_dir: Path) -> tuple[Iterator[Conv
         snapshot_dir = devgpt.download(raw_dir / "devgpt", spec.get("snapshot", devgpt.DEFAULT_SNAPSHOT), spec["url"])
         return islice(devgpt.load(snapshot_dir), limit), spec["url"], spec.get("snapshot")
     if name in trajectories.HF_IDS:
-        convs = trajectories.load(name, limit, revision=spec.get("revision"))
+        convs = trajectories.load(
+            name,
+            limit,
+            revision=spec.get("revision"),
+            random_row_groups=spec.get("random_row_groups", True),
+            seed=spec.get("seed", 42),
+            rows_per_group=spec.get("rows_per_group"),
+        )
         return convs, spec["hf_id"], spec.get("revision")
     raise ValueError(f"no loader for dataset {name!r}")
 

@@ -34,11 +34,14 @@ def iter_rows(
     *,
     random_row_groups: bool = False,
     seed: int = 42,
+    rows_per_group: int | None = None,
 ) -> Iterator[dict[str, Any]]:
     """Yield rows as dicts.
 
     In file order by default. With `random_row_groups`, row groups from all files are visited in a
     seeded random order, giving a reproducible sample spread across the whole dataset.
+    With `rows_per_group`, only that many seeded-random rows are kept from each row group, so a
+    sample spreads over many groups (needed when files are sorted, e.g. by repository).
     """
     import pyarrow.parquet as pq
 
@@ -47,12 +50,13 @@ def iter_rows(
     if not files:
         raise FileNotFoundError(f"no parquet files in {repo_id}@{revision or 'main'}")
 
+    rng = random.Random(seed)
     if random_row_groups:
         units: list[tuple[str, int]] = []
         for path in files:
             with fs.open(path, "rb") as f:
                 units += [(path, rg) for rg in range(pq.ParquetFile(f).num_row_groups)]
-        random.Random(seed).shuffle(units)
+        rng.shuffle(units)
     else:
         units = [(path, -1) for path in files]  # -1 = all row groups of the file
 
@@ -63,9 +67,24 @@ def iter_rows(
         with fs.open(path, "rb", block_size=8 * 2**20) as f:
             pf = pq.ParquetFile(f)
             groups = list(range(pf.num_row_groups)) if rg < 0 else [rg]
-            for batch in pf.iter_batches(batch_size=BATCH_SIZE, row_groups=groups):
-                for row in batch.to_pylist():
-                    if limit is not None and n >= limit:
-                        return
-                    n += 1
-                    yield row
+            for g in groups:
+                keep: set[int] | None = None
+                if rows_per_group:
+                    size = pf.metadata.row_group(g).num_rows
+                    keep = set(rng.sample(range(size), min(rows_per_group, size)))
+                last = max(keep) if keep else -1
+                pos = 0
+                for batch in pf.iter_batches(batch_size=BATCH_SIZE, row_groups=[g]):
+                    if keep is not None:
+                        local = sorted(i - pos for i in keep if pos <= i < pos + batch.num_rows)
+                        pos += batch.num_rows
+                        rows = batch.take(local).to_pylist() if local else []  # decode chosen rows only
+                    else:
+                        rows = batch.to_pylist()
+                    for row in rows:
+                        if limit is not None and n >= limit:
+                            return
+                        n += 1
+                        yield row
+                    if keep is not None and pos > last:
+                        break  # the rest of this row group holds no chosen rows
