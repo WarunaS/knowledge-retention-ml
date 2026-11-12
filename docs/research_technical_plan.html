@@ -236,7 +236,8 @@
         <div class="card">
           <h3>4.7 Model registry and classification service</h3>
           <ul>
-            <li>Versioned weights, config, metrics JSON and model card</li>
+            <li>Versioned weights, config, thresholds, validation and gold metrics, and a model card generated from the gold results; registration chooses the model on validation and is refused for runs not evaluated on gold</li>
+            <li>Every run records its git commit, library versions and data fingerprints, and an index lists all runs</li>
             <li>Service loads the registered model and scores segments on CPU</li>
             <li>Emits per-label probabilities and a knowledge-bearing flag</li>
           </ul>

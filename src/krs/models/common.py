@@ -88,6 +88,9 @@ def save_run(out: Path, run_cfg: dict[str, Any], th_kt: np.ndarray, th_dom: np.n
     (out / "thresholds.json").write_text(json.dumps(
         {"knowledge_types": th_kt.round(3).tolist(), "domains": th_dom.round(3).tolist()}, indent=1), encoding="utf-8")
     (out / "metrics_validation.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
+    from krs.tracking import write_run_info  # Stage 11: commit, versions, data fingerprints
+
+    write_run_info(out)
 
 
 def load_predictions(run_id: str, split: str, root: str | Path | None = None) -> dict[str, np.ndarray]:
