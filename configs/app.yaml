@@ -1,0 +1,24 @@
+# Application plane: extraction -> store -> retrieval -> agent / MCP / handover packs.
+# Privacy rule (architecture plan): own-log content never goes to a cloud LLM.
+cloud_sources: [wildchat, devgpt, swe_agent, openhands]   # own_logs is never in this list
+
+extraction:
+  backend: claude          # claude | local (extractive, no LLM). Own-log segments always use local.
+  model: claude-opus-5-5
+  effort: low
+  max_tokens: 4096
+  workers: 4
+  fallbacks: true
+  faithfulness_threshold: 0.5   # share of the summary's content words found in the source
+
+answer:
+  backend: claude          # claude | local. Falls back to local if any retrieved card comes from own logs.
+  model: claude-opus-5-5
+  effort: medium
+  max_tokens: 4096
+  fallbacks: true
+
+retrieval:
+  k: 5
+  embedding_model: sentence-transformers/all-MiniLM-L6-v2
+  expand: true             # one-hop graph expansion (cards sharing a tool, or next in the same conversation)

@@ -31,6 +31,15 @@ Add extras as stages need them: `explore`, `label`, `ml`, `app`.
 Each notebook's first cell mounts Drive, clones this repo, installs it, and points
 `KRS_DATA_ROOT` at `MyDrive/krs/data`. Set the repo URL in that cell once the GitHub repo exists.
 
+## Using the app (after a model is registered)
+```bash
+uv pip install -e ".[app]"
+uvicorn krs.app.agent:app                         # REST API, docs at http://localhost:8000/docs
+claude mcp add krs -- python -m krs.app.mcp_server # ask from inside Claude Code
+```
+Tools/endpoints: ask a question (answers cite `[card_id]`s), search cards, build a handover pack per
+project or person. Own-log cards are never sent to a cloud model.
+
 ## Data rules
 - Public corpora only for training; own logs only for the transfer test, with written consent.
 - Never commit data, model weights, own logs or API keys.

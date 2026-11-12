@@ -165,7 +165,7 @@
             <div class="row">
               <div class="box b5">Classification service<small>serves the trained model</small></div>
               <div class="arrow">→</div>
-              <div class="box b3">Extraction engine<small>LLM → knowledge cards</small></div>
+              <div class="box b3">Extraction engine<small>Claude or local extractive → knowledge cards</small></div>
               <div class="arrow">→</div>
               <div class="box b4">Knowledge repository<small>metadata DB · vector index · light graph</small></div>
               <div class="arrow">→</div>
@@ -240,7 +240,7 @@
           <ul>
             <li>Only segments the classifier flags as knowledge-bearing are extracted</li>
             <li>Card template chosen by knowledge type; domain labels attached</li>
-            <li>Faithfulness check: every card cites its source segment</li>
+            <li>Faithfulness check: evidence quoted verbatim from the source and at least half of the summary's content words found in the source; cards failing either are rejected with the reason</li>
           </ul>
         </div>
         <div class="card">
@@ -320,7 +320,7 @@
         <div class="card">
           <h3>5.7 Extraction engine</h3>
           <ul>
-            <li>LLM summarisation into typed knowledge cards</li>
+            <li>Claude writes typed knowledge cards for public sources; own-log segments use a local extractive backend (no LLM) so their content never reaches a cloud model</li>
             <li>Faithfulness check and rejection of ungrounded cards</li>
           </ul>
         </div>
@@ -404,10 +404,10 @@
         <div class="tech"><strong>Modelling</strong>scikit-learn baselines; Hugging Face transformers and PyTorch for fine-tuning; SetFit for the few-shot variant; free Colab GPU or laptop CPU</div>
         <div class="tech"><strong>Model registry</strong>Versioned folder with weights, config, metrics JSON and model card; MLflow optional</div>
         <div class="tech"><strong>Processing workers</strong>Python modules for filtering, preprocessing, classification and extraction, run as batch scripts</div>
-        <div class="tech"><strong>Storage</strong>SQLite for metadata and provenance; ChromaDB or FAISS for vectors; NetworkX for the lightweight graph</div>
+        <div class="tech"><strong>Storage</strong>SQLite for cards, metadata and provenance; normalised card embeddings with exact NumPy cosine search (no vector database needed at thousands of cards); NetworkX for the lightweight graph</div>
         <div class="tech"><strong>API and delivery</strong>FastAPI REST endpoints and an MCP server exposing a query tool</div>
         <div class="tech"><strong>LLM for extraction and answers</strong>Cloud API by default; local model via Hugging Face as a fallback</div>
-        <div class="tech"><strong>Evaluation</strong>scikit-learn and scipy for metrics and tests; ragas or an NLI check for faithfulness; matplotlib for plots</div>
+        <div class="tech"><strong>Evaluation</strong>scikit-learn and scipy for metrics and tests; a verbatim-evidence and supported-words check for faithfulness (an NLI model is optional); matplotlib for plots</div>
         <div class="tech"><strong>Frontend</strong>Optional Streamlit knowledge map for demonstration: coverage and single-person dependency, no ranking of individuals; not required for the research result</div>
         <div class="tech"><strong>Code and execution</strong>Repository knowledge-retention-ml, package krs, one module and one notebook per lifecycle stage; notebooks run on Colab with data on Google Drive</div>
       </div>

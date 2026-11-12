@@ -245,16 +245,17 @@
         <div class="card">
           <h3>4.8 Extraction</h3>
           <ul>
-            <li>LLM summarisation of flagged segments into typed knowledge cards</li>
+            <li>Claude summarises flagged public segments into typed knowledge cards; own-log segments use a local extractive backend</li>
             <li>Card template chosen by knowledge type; domain labels attached</li>
-            <li>Faithfulness check; cards without a grounded source are rejected</li>
+            <li>Faithfulness check: evidence quoted verbatim from the source and at least half of the summary's content words found in the source; cards failing either are rejected with the reason; a decision label without a stated decision is dropped, not the whole card</li>
           </ul>
         </div>
         <div class="card">
           <h3>4.9 Storage and retrieval</h3>
           <ul>
             <li>SQLite for cards, labels, provenance and consent records</li>
-            <li>ChromaDB or FAISS for card embeddings; retrieval filtered by domain, knowledge type, person, role and project</li>
+            <li>Card embeddings searched exactly with NumPy (cosine); retrieval filtered by domain, knowledge type, person, role, project and date</li>
+            <li>Deleting a person removes their cards from the database, the vectors and the graph</li>
             <li>NetworkX graph of problem → decision → tool → domain edges with optional one-hop expansion</li>
           </ul>
         </div>
@@ -303,12 +304,12 @@
         <div class="tech"><strong>Compute</strong>Free Colab GPU for fine-tuning; laptop CPU for everything else</div>
         <div class="tech"><strong>Experiment tracking</strong>Config files plus metrics JSON per run; MLflow optional</div>
         <div class="tech"><strong>Statistics</strong>scipy for bootstrap intervals and paired tests; scikit-learn for κ and F1</div>
-        <div class="tech"><strong>Vector store</strong>ChromaDB or FAISS</div>
+        <div class="tech"><strong>Vector store</strong>Normalised embeddings, exact NumPy search; FAISS only if cards reach hundreds of thousands</div>
         <div class="tech"><strong>Graph</strong>NetworkX in-process</div>
         <div class="tech"><strong>Metadata store</strong>SQLite; PostgreSQL only if scaling later</div>
         <div class="tech"><strong>LLM for extraction and answers</strong>Cloud API by default; local model via Hugging Face as fallback</div>
-        <div class="tech"><strong>Faithfulness</strong>ragas, or an NLI entailment model</div>
-        <div class="tech"><strong>API and delivery</strong>FastAPI, Uvicorn, MCP Python SDK</div>
+        <div class="tech"><strong>Faithfulness</strong>Verbatim evidence span plus share of supported summary words; NLI entailment optional</div>
+        <div class="tech"><strong>API and delivery</strong>FastAPI, Uvicorn, MCP Python SDK 2.x (MCPServer)</div>
         <div class="tech"><strong>Visualisation</strong>matplotlib, seaborn; Streamlit optional for a knowledge map (coverage and single-person dependency, no ranking of individuals)</div>
         <div class="tech"><strong>Dev tooling</strong>Jupyter, VS Code, Git and GitHub</div>
       </div>

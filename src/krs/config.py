@@ -51,6 +51,10 @@ class Paths:
         return self.root / "predictions"
 
     @property
+    def store(self) -> Path:  # application plane: cards database, vectors, graph
+        return self.root / "store"
+
+    @property
     def manifest(self) -> Path:
         return self.raw / "manifest.json"
 
