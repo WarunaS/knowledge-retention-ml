@@ -142,8 +142,9 @@ class KnowledgeStore:
         (self.path / "graph.json").write_text(json.dumps(json_graph.node_link_data(self.graph, edges="edges")),
                                               encoding="utf-8")
 
-    def neighbours(self, card_id: str, via: tuple[str, ...] = ("tool", "follows")) -> set[str]:
-        """Cards one hop away: sharing a tool node, or next/previous in the same conversation."""
+    def neighbours(self, card_id: str, via: tuple[str, ...] = ("tool", "follows"), hub_limit: int = 10) -> set[str]:
+        """Cards one hop away: next/previous in the same conversation, or sharing a tool node. Tools linked to
+        more than `hub_limit` cards (e.g. 'bash') say nothing specific and are skipped."""
         g = self.graph
         if card_id not in g:
             return set()
@@ -152,7 +153,7 @@ class KnowledgeStore:
             rel = g.edges[card_id, n].get("rel")
             if rel == "follows" and "follows" in via:
                 out.add(n)
-            elif rel in via and g.nodes[n].get("kind") == rel:
+            elif rel in via and g.nodes[n].get("kind") == rel and g.degree(n) <= hub_limit:
                 out.update(m for m in g.neighbors(n) if m != card_id and g.nodes[m].get("kind") == "card")
         return out
 

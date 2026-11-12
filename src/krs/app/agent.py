@@ -18,7 +18,13 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from krs.app.common import app_config, claude_client, claude_text, cloud_allowed
+from krs.app.common import (
+    app_config,
+    claude_client,
+    claude_credentials_set,
+    claude_text,
+    cloud_allowed,
+)
 from krs.app.handover import build_pack
 from krs.app.retrieval import Hit, search
 from krs.app.storage import KnowledgeStore
@@ -64,12 +70,18 @@ def ask(store: KnowledgeStore, question: str, filters: dict[str, Any] | None = N
     backend, note = acfg.get("backend", "claude"), None
     if backend == "claude" and any(not cloud_allowed(h.card.conversation_id, cfg) for h in hits):
         backend, note = "local", "Some cards come from own logs, which are never sent to a cloud model; answered locally."
+    if backend == "claude" and hits and client is None and not claude_credentials_set():
+        backend, note = "local", "No Anthropic API key is set; answered locally."
+    text, model = None, None
     if backend == "claude" and hits:
-        text, msg = claude_text(client or claude_client(), acfg, SYSTEM,
-                                f"Knowledge cards:\n\n{render_cards(hits)}\n\nQuestion: {question}")
-        model = getattr(msg, "model", acfg.get("model"))
-    else:
-        text, model = local_answer(hits), None
+        try:
+            text, msg = claude_text(client or claude_client(), acfg, SYSTEM,
+                                    f"Knowledge cards:\n\n{render_cards(hits)}\n\nQuestion: {question}")
+            model = getattr(msg, "model", acfg.get("model"))
+        except Exception as e:  # noqa: BLE001 - a failed cloud call must not break the answer
+            backend, note, text = "local", f"Claude was unavailable ({type(e).__name__}); answered locally.", None
+    if text is None:
+        text = local_answer(hits)
     retrieved = {h.card.card_id for h in hits}
     cited = list(dict.fromkeys(_CITE.findall(text)))
     return {

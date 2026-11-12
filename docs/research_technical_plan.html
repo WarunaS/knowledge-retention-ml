@@ -256,7 +256,7 @@
             <li>SQLite for cards, labels, provenance and consent records</li>
             <li>Card embeddings searched exactly with NumPy (cosine); retrieval filtered by domain, knowledge type, person, role, project and date</li>
             <li>Deleting a person removes their cards from the database, the vectors and the graph</li>
-            <li>NetworkX graph of problem → decision → tool → domain edges with optional one-hop expansion</li>
+            <li>NetworkX graph of card, project, tool, domain and person nodes, with optional one-hop expansion (next card in the same conversation, or a shared tool; tools linked to many cards are skipped; at most k extra cards)</li>
           </ul>
         </div>
         <div class="card">

@@ -243,3 +243,39 @@ def test_mcp_tools(store):
     assert not res.is_error and "queue" in res.content[0].text.lower()
     res = asyncio.run(server.call_tool("handover_pack", {"project_id": "orders"}))
     assert "Decision log" in res.content[0].text
+
+
+def test_ask_without_key_or_with_failing_claude_falls_back(store, monkeypatch):
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("ANTHROPIC_AUTH_TOKEN", raising=False)
+    r = agent.ask(store, "why a queue for order emails", {"project_id": "orders", "role": "tech_lead"}, cfg=CFG)
+    assert r["backend"] == "local" and "No Anthropic API key" in r["note"]
+
+    class Broken:
+        beta = NS(messages=NS(create=lambda **kw: (_ for _ in ()).throw(ConnectionError("down"))))
+
+    r = agent.ask(store, "why a queue for order emails", {"project_id": "orders", "role": "tech_lead"}, cfg=CFG, client=Broken())
+    assert r["backend"] == "local" and "ConnectionError" in r["note"] and r["answer"].startswith("Most relevant")
+
+
+def test_extraction_without_key_fails_clearly(world, monkeypatch):
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("ANTHROPIC_AUTH_TOKEN", raising=False)
+    with pytest.raises(RuntimeError, match="ANTHROPIC_API_KEY"):
+        extraction.extract_cards(world / "preds.jsonl", world / "cards.jsonl", CFG)
+
+
+def test_expansion_is_capped_and_skips_hub_tools(tmp_path):
+    from krs.app.extraction import card_id
+
+    s = KnowledgeStore(tmp_path / "hub", embedder=emb())
+    cards = []
+    for i in range(30):  # 30 cards all using 'bash': a hub tool that links everything
+        cards.append(KnowledgeCard(card_id=card_id(f"h{i}"), source_segment_ids=[f"h{i}"], conversation_id=f"wildchat:h{i}",
+                                   domains=[Domain.QA_TESTING], knowledge_types=[KnowledgeType.PROCEDURAL],
+                                   title=f"step {i}", summary=f"run tests number {i}", tools_involved=["bash"],
+                                   evidence="x", confidence=0.9, model_version="t"))
+    s.add(cards)
+    assert s.neighbours(cards[0].card_id) == set()  # hub tool skipped
+    hits = retrieval.search(s, "run tests", k=3, expand=True)
+    assert len(hits) <= 6

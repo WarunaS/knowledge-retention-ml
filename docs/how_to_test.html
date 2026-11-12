@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Test and Run</title>
+  <style>
+    :root {
+      --bg: #f5f7fb; --panel: #ffffff; --ink: #1f2937; --muted: #5a687a; --line: #dfe7f3;
+      --blue: #2d5bff; --green: #13a67f; --amber: #efaa3b; --red: #d85a5a;
+      --soft-blue: #edf3ff; --soft-green: #ebfaf5; --soft-amber: #fff4df; --soft-red: #fdeeee;
+      --code-bg: #f3f5f9; --shadow: 0 12px 30px rgba(17,24,39,0.06);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: Arial, Helvetica, sans-serif; line-height: 1.6; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
+    .header { background: linear-gradient(135deg, #eef5ff, #f9fbff); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 24px 26px; margin-bottom: 22px; }
+    h1 { margin: 0 0 8px; font-size: 1.9rem; }
+    .subtitle { margin: 0; color: var(--muted); }
+    .meta { margin-top: 10px; font-size: 0.9rem; color: var(--muted); }
+    .section { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 20px 22px; margin-bottom: 20px; }
+    h2 { margin: 0 0 10px; font-size: 1.3rem; }
+    h3 { margin: 16px 0 6px; font-size: 1.05rem; }
+    p, li { color: var(--muted); }
+    li { margin-bottom: 4px; }
+    code { background: var(--code-bg); border-radius: 5px; padding: 1px 5px; font-size: 0.9em; color: var(--ink); }
+    pre { background: #1f2937; color: #e8edf5; border-radius: 12px; padding: 12px 14px; overflow-x: auto; font-size: 0.86rem; line-height: 1.5; }
+    pre code { background: none; color: inherit; padding: 0; }
+    .table-wrap { overflow-x: auto; }
+    table.tbl { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.92rem; }
+    .tbl th, .tbl td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .tbl th { background: #f6f9ff; color: var(--ink); }
+    .tbl td { color: var(--muted); }
+    .tbl td:first-child { color: var(--ink); font-weight: 700; }
+    .callout { margin-top: 12px; padding: 10px 14px; border-left: 5px solid var(--blue); border-radius: 10px; background: var(--soft-blue); color: var(--ink); font-size: 0.93rem; }
+    .callout.warn { border-left-color: var(--amber); background: var(--soft-amber); }
+    .callout.ok { border-left-color: var(--green); background: var(--soft-green); }
+    .callout.stop { border-left-color: var(--red); background: var(--soft-red); }
+    nav.toc { columns: 2; column-gap: 28px; }
+    nav.toc a { color: var(--blue); text-decoration: none; }
+    nav.toc li { break-inside: avoid; }
+    .tag { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; color: #fff; }
+    .free { background: var(--green); } .paid { background: var(--red); } .gpu { background: var(--amber); } .local { background: var(--blue); }
+    @media (max-width: 640px) { nav.toc { columns: 1; } h1 { font-size: 1.6rem; } }
+    @media print { body { background: #fff; } .section, .header { box-shadow: none; } pre { white-space: pre-wrap; } }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <h1>How to Test and Run - A to Z</h1>
+    <p class="subtitle">knowledge-retention-ml · setup, environment variables, the three levels of testing, the full run, and where to see every result</p>
+    <p class="meta">12 November 2026 · matches the code on GitHub (all to-do rows done) · 140 fast tests, 4 slow, 3 live</p>
+  </header>
+
+  <section class="section">
+    <h2>Contents</h2>
+    <nav class="toc"><ol>
+      <li><a href="#quick">Quick start (3 commands)</a></li>
+      <li><a href="#need">What you need</a></li>
+      <li><a href="#env">Environment variables</a></li>
+      <li><a href="#install">Install options</a></li>
+      <li><a href="#tests">Level 1 - automated tests</a></li>
+      <li><a href="#smoke">Level 2 - smoke test (whole pipeline, free)</a></li>
+      <li><a href="#real">Level 3 - the real run, stage by stage</a></li>
+      <li><a href="#colab">Running on Colab</a></li>
+      <li><a href="#where">Where every result goes</a></li>
+      <li><a href="#see">How to see the results</a></li>
+      <li><a href="#safety">Cost and privacy checks</a></li>
+      <li><a href="#trouble">Troubleshooting</a></li>
+      <li><a href="#checklist">A-to-Z checklist</a></li>
+    </ol></nav>
+    <p><span class="tag free">free</span> no cost &nbsp; <span class="tag local">local</span> laptop &nbsp; <span class="tag gpu">GPU</span> Colab GPU &nbsp; <span class="tag paid">paid</span> Claude API, costs money</p>
+  </section>
+
+  <section class="section" id="quick">
+    <h2>1. Quick start</h2>
+    <pre><code>cd knowledge-retention-ml
+uv venv &amp;&amp; source .venv/bin/activate
+uv pip install -e ".[dev,clean,explore,ml,label,app,dashboard]"
+
+pytest                          # 140 fast tests, ~10 s
+python scripts/smoke_test.py    # whole pipeline on tiny real data, ~1.5 min, no API cost</code></pre>
+    <div class="callout ok">If both finish without errors, the code works on your machine. The rest of this page explains each piece and how to do the real run.</div>
+  </section>
+
+  <section class="section" id="need">
+    <h2>2. What you need</h2>
+    <div class="table-wrap"><table class="tbl">
+      <tr><th>Item</th><th>For</th><th>Notes</th></tr>
+      <tr><td>Python 3.10+ and <code>uv</code></td><td>Everything</td><td>The project venv uses Python 3.12. <code>pip</code> works too, <code>uv</code> is faster.</td></tr>
+      <tr><td>Internet</td><td>Stage 2, first model downloads</td><td>Datasets stream from Hugging Face; MiniLM (~90 MB) and the DeBERTa tokenizer download once and are cached.</td></tr>
+      <tr><td>Google account (Drive + Colab)</td><td>The real run</td><td>Colab GPU for stages 8 (M1, A1, A2, M2); Drive keeps outputs between sessions.</td></tr>
+      <tr><td>Anthropic API key</td><td>Paid steps only</td><td>Weak labels (Stage 4b), teacher T, Claude card extraction and answers. Everything else runs without it.</td></tr>
+      <tr><td>People</td><td>Human steps</td><td>Two raters for the gold set, consenting teammates for own logs and X1, participants and a rater for the successor task.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="section" id="env">
+    <h2>3. Environment variables</h2>
+    <div class="table-wrap"><table class="tbl">
+      <tr><th>Variable</th><th>Needed for</th><th>Default if not set</th><th>Read by</th></tr>
+      <tr><td><code>KRS_DATA_ROOT</code></td><td>Where data lives: raw, filtered, segments, labels, splits, features, predictions, store</td><td><code>&lt;repo&gt;/data</code></td><td><code>krs/config.py</code></td></tr>
+      <tr><td><code>KRS_RESULTS_DIR</code></td><td>Run folders, evaluation, X1, app evaluation, runs index</td><td><code>&lt;repo&gt;/results</code></td><td><code>krs/config.py</code></td></tr>
+      <tr><td><code>KRS_MODELS_DIR</code></td><td>Registered model versions and <code>registry.json</code></td><td><code>&lt;repo&gt;/models</code></td><td><code>krs/config.py</code></td></tr>
+      <tr><td><code>ANTHROPIC_API_KEY</code></td><td>Paid steps (see above)</td><td>none - paid steps fail; local backends still work</td><td>Anthropic SDK; the dashboard checks it before using Claude</td></tr>
+      <tr><td><code>HF_TOKEN</code></td><td>Optional: higher Hugging Face rate limits in Stage 2</td><td>none (works, with a warning)</td><td>Hugging Face library</td></tr>
+      <tr><td><code>OMP_NUM_THREADS</code>, <code>TOKENIZERS_PARALLELISM=false</code></td><td>Optional: keep a laptop responsive during embeddings and training tests</td><td>all cores</td><td>PyTorch / tokenizers</td></tr>
+    </table></div>
+    <div class="callout warn"><strong>The code does not read a <code>.env</code> file.</strong> <code>.env.example</code> lists the variables as a reminder only. Set them in your shell, or from Colab secrets.</div>
+    <h3>Set them locally (macOS / Linux)</h3>
+    <pre><code>export ANTHROPIC_API_KEY="sk-ant-..."          # only for paid steps
+export KRS_DATA_ROOT="$HOME/krs/data"          # optional: keep data outside the repo
+export KRS_RESULTS_DIR="$HOME/krs/results"
+export KRS_MODELS_DIR="$HOME/krs/models"
+export OMP_NUM_THREADS=4 TOKENIZERS_PARALLELISM=false</code></pre>
+    <h3>Set them in Colab</h3>
+    <p>The first cell of every notebook already sets the three <code>KRS_*</code> folders to Google Drive. For the API key, add it once under <strong>Colab → 🔑 Secrets</strong> as <code>ANTHROPIC_API_KEY</code>, then in the notebook:</p>
+    <pre><code>import os
+from google.colab import userdata
+os.environ["ANTHROPIC_API_KEY"] = userdata.get("ANTHROPIC_API_KEY")</code></pre>
+    <div class="callout stop">Never paste a key into a notebook cell or a config file, and never commit <code>.env</code> (it is gitignored).</div>
+  </section>
+
+  <section class="section" id="install">
+    <h2>4. Install options</h2>
+    <p>Install only what a stage needs. <code>-e</code> means changes to <code>src/</code> apply without reinstalling.</p>
+    <div class="table-wrap"><table class="tbl">
+      <tr><th>Extra</th><th>Adds</th><th>Needed for</th></tr>
+      <tr><td><em>(core)</em></td><td>pydantic, pyyaml, pandas, pyarrow, datasets, tqdm</td><td>Stage 2 and the data contract</td></tr>
+      <tr><td><code>clean</code></td><td>datasketch, langdetect</td><td>Stage 3</td></tr>
+      <tr><td><code>explore</code></td><td>bertopic, matplotlib, seaborn</td><td>Stage 4 (also pulls sentence-transformers and PyTorch)</td></tr>
+      <tr><td><code>label</code></td><td>anthropic</td><td>Stage 4b, teacher T</td></tr>
+      <tr><td><code>ml</code></td><td>scikit-learn, scipy, sentence-transformers, transformers, torch, setfit, sentencepiece, protobuf</td><td>Stages 5-14, X1</td></tr>
+      <tr><td><code>app</code></td><td>fastapi, uvicorn, httpx, networkx, mcp, anthropic</td><td>Cards, store, REST API, MCP</td></tr>
+      <tr><td><code>dashboard</code></td><td>streamlit</td><td>Optional demo screen (adds 5 packages, changes none)</td></tr>
+      <tr><td><code>dev</code></td><td>pytest, ruff, jupyter</td><td>Tests and linting</td></tr>
+    </table></div>
+    <pre><code>uv pip install -e ".[dev,clean,explore,ml,label,app,dashboard]"   # everything (laptop)
+%pip install -q -e "/content/knowledge-retention-ml[ml]"          # what a Colab notebook installs</code></pre>
+  </section>
+
+  <section class="section" id="tests">
+    <h2>5. Level 1 - automated tests <span class="tag free">free</span> <span class="tag local">local</span></h2>
+    <pre><code>pytest                    # fast tests (default): 140, ~10 s, no network
+pytest -m slow            # 4 tests: real DeBERTa/SetFit code with tiny models, BERTopic (~20 s)
+pytest -m network         # 3 tests: stream real rows from Hugging Face (~20 s, needs internet)
+pytest -m "slow or network" -q
+pytest tests/test_app.py -q          # one file
+pytest -k "privacy or faithfulness"  # by name
+ruff check src tests scripts         # lint</code></pre>
+    <div class="callout">No test calls the Claude API: labelling, the teacher, extraction and answers use a fake client. No test touches real own logs.</div>
+    <h3>What each test file checks</h3>
+    <div class="table-wrap"><table class="tbl">
+      <tr><th>File</th><th>Stage</th><th>Key checks</th></tr>
+      <tr><td>test_schema.py</td><td>Contract</td><td>Records validate; 'none' alone; cards need provenance; decision cards need a decision</td></tr>
+      <tr><td>test_collect.py / _live.py</td><td>2</td><td>Loaders map real schemas; privacy fields dropped; consent required; sampling spreads across repositories</td></tr>
+      <tr><td>test_clean.py</td><td>3</td><td>Filters, dedup, segments, redaction of secrets and personal data, precision sheet</td></tr>
+      <tr><td>test_explore.py</td><td>4</td><td>Tables, plots, domain hints, knowledge share; BERTopic (slow)</td></tr>
+      <tr><td>test_label.py</td><td>4b</td><td>Sampling excludes gold conversations; labeller (batch + sync), rater sheets, kappa, adjudication, noise check</td></tr>
+      <tr><td>test_split.py</td><td>6</td><td>Split by conversation; no leakage; reproducible</td></tr>
+      <tr><td>test_features.py</td><td>5</td><td>TF-IDF fitted on train only; label matrices; token lengths</td></tr>
+      <tr><td>test_models.py</td><td>7-8, 10</td><td>Baselines learn; context cut first; SetFit cross-fitting never predicts its training rows; teacher dry run; fine-tune and SetFit (slow)</td></tr>
+      <tr><td>test_evaluate.py</td><td>9</td><td>Known F1 values; conversation bootstrap wider than segment bootstrap; paired tests; H2 margin</td></tr>
+      <tr><td>test_registry.py</td><td>11-12</td><td>Run info; best by validation; refuses runs without gold; reloaded model reproduces predictions</td></tr>
+      <tr><td>test_inference.py</td><td>14</td><td>Every model type reproduces its training probabilities; resume; DeBERTa (slow)</td></tr>
+      <tr><td>test_transfer.py</td><td>X1</td><td>Drop detected on shifted data; runs once; report has no text</td></tr>
+      <tr><td>test_app.py</td><td>App</td><td>Own-log text never reaches the cloud model; invented evidence rejected; GDPR delete; filters; citations; REST; MCP</td></tr>
+      <tr><td>test_app_eval.py</td><td>App eval</td><td>Recall@k/MRR; filters fix colliding projects; counterbalanced and blind successor task</td></tr>
+      <tr><td>test_dashboard.py</td><td>Dashboard</td><td>Contributors never named; dashboard runs headless; local answers</td></tr>
+    </table></div>
+  </section>
+
+  <section class="section" id="smoke">
+    <h2>6. Level 2 - smoke test (whole pipeline) <span class="tag free">free</span> <span class="tag local">local</span></h2>
+    <pre><code>python scripts/smoke_test.py            # ~1.5 min, writes ./smoke/ (gitignored)
+python scripts/smoke_test.py --topics   # also BERTopic (+20 s)
+python scripts/smoke_test.py --out /tmp/krs-smoke</code></pre>
+    <p>Runs on tiny real data: collect (WildChat 300, SWE-agent 30, OpenHands 30) → clean → explore → <strong>placeholder labels</strong> → split → features → B0, B1, B2 → evaluate → register → inference → cards (local backend) → store → ask and handover → retrieval evaluation. Expected ending:</p>
+    <pre><code>=== 14 Inference (CPU)
+    ok in 5.0s | scored: 620 | seconds_per_1k: 7.47
+...
+SMOKE TEST PASSED. Outputs under .../smoke</code></pre>
+    <div class="callout warn"><strong>Every score it prints is meaningless.</strong> The labels are random placeholders so the chain runs without paying for labels or waiting for human raters. For the same reason many cards are rejected with "only a decision was predicted but no decision is stated": the toy model predicts "decision" at random and the faithfulness rule refuses to invent a decision that is not in the text. With real labels this does not happen.</div>
+    <p>Not covered by the smoke test (they need a GPU, money or consent): M1, A1, A2, M2, teacher T, X1, and the Claude backends.</p>
+  </section>
+
+  <section class="section" id="real">
+    <h2>7. Level 3 - the real run, stage by stage</h2>
+    <p>Run the notebooks in this order. Each first cell mounts Drive, clones the repo and installs it. Settings for each stage are in <code>configs/</code>; experiments in <code>configs/runs/</code>.</p>
+    <div class="table-wrap"><table class="tbl">
+      <tr><th>Stage</th><th>Notebook · where</th><th>Main call</th><th>Check the result</th></tr>
+      <tr><td>2 Collect</td><td>02_collect · Colab <span class="tag free">free</span></td><td><code>run_collect("collect")</code></td><td><code>raw/manifest.json</code>: rows, licence, pinned version per dataset. Dry run with <code>limit: 200</code> first.</td></tr>
+      <tr><td>3 Clean</td><td>03_clean · Colab</td><td><code>run_cleaning("clean")</code></td><td><code>filtered/cleaning_report.json</code> (counts after every step); fill the 200-row precision sheet → <code>precision()</code></td></tr>
+      <tr><td>4 Explore</td><td>04_explore · Colab GPU helps</td><td><code>run_explore("explore")</code></td><td><code>results/eda/</code>: overview table, 4 plots, topics, <code>topic_domain_coverage.csv</code> (large "other" = missing label)</td></tr>
+      <tr><td>4b Label</td><td>05_label · Colab <span class="tag paid">paid</span></td><td><code>select_gold</code>, <code>select_pool</code>, <code>submit_batch</code> → <code>collect_batch</code></td><td>Cost estimate cell first. <code>weak.jsonl</code>, <code>weak_errors.jsonl</code>; noise check; κ from <code>agreement()</code>; <code>gold.jsonl</code></td></tr>
+      <tr><td>6 Split</td><td>06_split · Colab</td><td><code>make_splits("split")</code></td><td><code>splits/split_report.json</code>: sizes and label balance; the leakage check stops the run if a conversation is in two splits</td></tr>
+      <tr><td>5 Features</td><td>07 (top) · Colab GPU</td><td><code>build_features("features")</code></td><td><code>features/features_report.json</code>: vocabulary, dims, share of inputs over 512 tokens</td></tr>
+      <tr><td>7 Baselines</td><td>07 (bottom) · CPU</td><td><code>run_experiment("B0"|"B1"|"B2")</code></td><td><code>results/B*/metrics_validation.json</code></td></tr>
+      <tr><td>8, 10 Train + tune</td><td>08_train · Colab <span class="tag gpu">GPU</span></td><td><code>run_experiment("M1"|"A1"|"A2"|"M2")</code></td><td>Validation macro-F1 per epoch in <code>m1["history"]</code>; A2 learning curve</td></tr>
+      <tr><td>Teacher T</td><td>08_train · <span class="tag paid">paid</span></td><td><code>run_experiment("T")</code> then <code>("T", confirm=True)</code></td><td>First call is an estimate only. <code>results/T/</code>: cost and latency per 1k</td></tr>
+      <tr><td>9 Evaluate</td><td>09_evaluate · CPU</td><td><code>evaluate_runs("evaluate")</code></td><td><code>results/eval/results_table.md</code>, hypotheses in <code>comparisons.json</code>, confusion matrices</td></tr>
+      <tr><td>11-12 Register</td><td>12_register · CPU</td><td><code>registry.register(registry.best_run([...]))</code></td><td><code>models/&lt;version&gt;/model_card.md</code>; <code>results/runs_index.csv</code></td></tr>
+      <tr><td>14 Inference</td><td>14_inference · CPU</td><td><code>classify("inference")</code></td><td><code>predictions/&lt;version&gt;_report.json</code>: knowledge-bearing share, speed per 1k</td></tr>
+      <tr><td>X1 Transfer</td><td>16_transfer_test · <strong>local only</strong> <span class="tag local">local</span></td><td><code>export_transfer_sheet</code> → label → <code>import_transfer_sheet</code> → <code>make_splits</code> → <code>transfer.run()</code></td><td><code>results/X1/report.json</code>; runs <strong>once</strong> (a re-run needs <code>force=True, reason=...</code>)</td></tr>
+      <tr><td>App</td><td>15_app · CPU (Claude <span class="tag paid">paid</span> for public cards)</td><td><code>extract_cards</code>, <code>KnowledgeStore().add</code>, <code>ask</code>, <code>build_pack</code></td><td><code>cards_rejected.jsonl</code> reasons; <code>store.stats()</code>; answers cite <code>[card_id]</code></td></tr>
+      <tr><td>App evaluation</td><td>17_app_eval · CPU</td><td><code>export_card_check</code>, <code>export_query_sheet</code>, <code>evaluate_retrieval</code>, successor sheets, <code>analyse()</code></td><td><code>results/app_eval/</code>: retrieval.json, card check rate, successor analysis</td></tr>
+    </table></div>
+    <h3>Own logs (local only, consent first)</h3>
+    <pre><code>cp configs/consent.example.yaml own_logs/consent.yaml      # fill pseudonyms + consent dates
+python -c "from krs.collect.pipeline import run_own_logs; print(run_own_logs('own_logs/consent.yaml'))"
+python -c "from krs.clean.pipeline import run_cleaning; run_cleaning('clean')"   # redacts own logs first
+# add names of people/clients/systems to own_logs/redact_terms.txt, then skim the redacted segments</code></pre>
+  </section>
+
+  <section class="section" id="colab">
+    <h2>8. Running on Colab</h2>
+    <ol>
+      <li>Open a notebook from GitHub: <code>File → Open notebook → GitHub → WarunaS/knowledge-retention-ml</code>.</li>
+      <li>For stages 4, 5 and 8: <code>Runtime → Change runtime type → GPU</code>.</li>
+      <li>Run the first cell: it mounts Drive, clones the repo (<code>git pull</code> on later runs), installs it and sets <code>KRS_DATA_ROOT</code>, <code>KRS_RESULTS_DIR</code>, <code>KRS_MODELS_DIR</code> to <code>MyDrive/krs/</code>.</li>
+      <li>For paid steps, load the API key from Colab secrets (section 3).</li>
+      <li>Outputs stay on Drive, so a later notebook (or your laptop with the same folders) picks them up.</li>
+    </ol>
+    <div class="callout">If the repo is private, Colab needs a GitHub token to clone; making it public is simplest. Own logs never go to Colab.</div>
+  </section>
+
+  <section class="section" id="where">
+    <h2>9. Where every result goes</h2>
+    <pre><code>$KRS_DATA_ROOT/                       (default data/)
+  raw/          &lt;dataset&gt;.jsonl, manifest.json, devgpt/            Stage 2
+  filtered/     &lt;source&gt;.jsonl, cleaning_report.json, precision_check_wildchat.csv   Stage 3
+  segments/     &lt;source&gt;.jsonl                                     Stage 3
+  labels/       gold_ids.json, pool_ids.json, rater1.csv, rater2.csv, weak.jsonl,
+                weak_errors.jsonl, weak_batch_state.json, noise_check.csv, adjudicate.csv,
+                gold.jsonl, transfer_sheet.csv, transfer.jsonl     Stage 4b, X1
+  splits/       train/validation/test/transfer.jsonl, split_report.json   Stage 6
+  features/     &lt;split&gt;_tfidf_*.npz, &lt;split&gt;_emb_*.npy, &lt;split&gt;_labels.npz,
+                tfidf_*.pkl, features_report.json                  Stage 5
+  predictions/  &lt;version&gt;.jsonl, &lt;version&gt;_report.json              Stage 14
+  store/        cards.db, vectors.npy, vector_ids.json, graph.json App
+  cards.jsonl, cards_rejected.jsonl                                App
+
+$KRS_RESULTS_DIR/                     (default results/)
+  eda/          overview.csv, relevance.csv, top_tools.csv, *.png, topics.csv, summary.json   Stage 4
+  &lt;run_id&gt;/     config.yaml, thresholds.json, metrics_validation.json, run_info.json,
+                predictions_&lt;split&gt;.npz, model/                    Stages 7-8 (B0..M2, T)
+  eval/         results_table.csv/.md, report_&lt;run&gt;.json, comparisons.json, summary.json,
+                confusion_*.png, learning_curve.png                Stage 9
+  runs_index.csv                                                   Stage 11
+  X1/           report.json, predictions_transfer.npz, x1_lock.json   X1
+  app_eval/     card_check.csv, queries.csv, retrieval.json, successor/   App evaluation
+
+$KRS_MODELS_DIR/                      (default models/)
+  registry.json                                                    Stage 12
+  &lt;version&gt;/    model/, config.yaml, thresholds.json, metrics_*.json, run_info.json, model_card.md</code></pre>
+    <div class="callout">None of these folders are committed: data, results and models are gitignored.</div>
+  </section>
+
+  <section class="section" id="see">
+    <h2>10. How to see the results</h2>
+    <h3>a) In the notebooks</h3>
+    <p>Notebooks 04, 06, 09, 12, 14, 16 and 17 end with tables and plots for their stage. Notebook 09 shows the results table, hypotheses, per-label scores and confusion matrices.</p>
+    <h3>b) The files for the report</h3>
+    <ul>
+      <li><code>results/eval/results_table.md</code> - paste into the report (macro-F1 with 95% CIs per run)</li>
+      <li><code>results/eval/comparisons.json</code> - H1, H2, H3 verdicts with CIs and p-values</li>
+      <li><code>models/&lt;version&gt;/model_card.md</code> - the model card</li>
+      <li><code>results/X1/report.json</code> - transfer drop (RQ3)</li>
+      <li><code>results/app_eval/retrieval.json</code> and the successor analysis (RQ4)</li>
+      <li><code>results/eda/*.png</code>, <code>results/eval/*.png</code> - figures</li>
+    </ul>
+    <h3>c) Dashboard (one screen)</h3>
+    <pre><code>uv pip install -e ".[dashboard]"
+streamlit run src/krs/app/dashboard.py                 # http://localhost:8501
+
+# to look at the smoke-test outputs instead of your real data:
+KRS_DATA_ROOT=smoke/data KRS_RESULTS_DIR=smoke/results KRS_MODELS_DIR=smoke/models \
+  streamlit run src/krs/app/dashboard.py</code></pre>
+    <p>Tabs: <strong>Ask</strong> (local answers by default; Claude only if chosen and a key is set) · <strong>Handover pack</strong> (download) · <strong>Knowledge map</strong> (coverage, areas depending on one person - never named, stale areas) · <strong>Model results</strong>.</p>
+    <h3>d) REST API</h3>
+    <pre><code>uvicorn krs.app.agent:app        # interactive docs: http://localhost:8000/docs
+
+curl localhost:8000/health
+curl -X POST localhost:8000/ask -H 'content-type: application/json' \
+     -d '{"question": "Why did we choose a queue for order emails?", "filters": {"project_id": "orders"}}'
+curl -X POST localhost:8000/search -H 'content-type: application/json' -d '{"query": "deploy steps", "k": 5}'
+curl "localhost:8000/handover?project_id=orders"
+curl localhost:8000/cards/&lt;card_id&gt;</code></pre>
+    <h3>e) Inside Claude Code (MCP)</h3>
+    <pre><code>claude mcp add krs -e KRS_DATA_ROOT="$PWD/data" -- "$PWD/.venv/bin/python" -m krs.app.mcp_server</code></pre>
+    <p>Then ask in Claude Code: <em>"Why did the team pick Redis for sessions?"</em>. Tools: <code>ask_predecessor</code>, <code>search_knowledge</code>, <code>handover_pack</code>.</p>
+    <h3>f) All experiments at a glance</h3>
+    <pre><code>python -c "from krs import tracking; print(tracking.index_runs().to_string())"</code></pre>
+  </section>
+
+  <section class="section" id="safety">
+    <h2>11. Cost and privacy checks</h2>
+    <div class="table-wrap"><table class="tbl">
+      <tr><th>Check</th><th>How</th></tr>
+      <tr><td>Before weak labelling</td><td>Run the estimate cell in notebook 05 (about $35-$105 for 10,000 segments with Claude Opus 5.5 in batch mode). Changing <code>model</code> in <code>configs/label.yaml</code> is the main cost lever.</td></tr>
+      <tr><td>Before the teacher run</td><td><code>run_experiment("T")</code> returns an estimate only (about $4 for 400 gold segments); nothing is sent until <code>confirm=True</code>.</td></tr>
+      <tr><td>Own logs</td><td>Collected and cleaned locally, redacted before anything else; never on Colab; card extraction and answers for them always use the local backend (enforced in code and tested).</td></tr>
+      <tr><td>X1</td><td>Runs once; the lock file records any forced re-run and its reason; the report holds ids and numbers only.</td></tr>
+      <tr><td>People</td><td>Pseudonyms only; the knowledge map never names contributors; nothing ranks or scores individuals; <code>store.delete_person(id)</code> erases a person's cards everywhere.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="section" id="trouble">
+    <h2>12. Troubleshooting</h2>
+    <div class="table-wrap"><table class="tbl">
+      <tr><th>Symptom</th><th>Cause and fix</th></tr>
+      <tr><td><code>FileNotFoundError: ... run Stage X first</code></td><td>A stage's input is missing. Run the stages in order, with the same <code>KRS_*</code> folders.</td></tr>
+      <tr><td>Hugging Face warning about unauthenticated requests</td><td>Harmless. Set <code>HF_TOKEN</code> for higher rate limits.</td></tr>
+      <tr><td>DeBERTa tokenizer error mentioning <code>tiktoken</code> or <code>protobuf</code></td><td>Install the <code>ml</code> extra (it includes <code>sentencepiece</code> and <code>protobuf</code>).</td></tr>
+      <tr><td>Answer says "No Anthropic API key is set; answered locally"</td><td>Intended fallback: the REST API, MCP and dashboard never crash without a key. Set <code>ANTHROPIC_API_KEY</code> (section 3) for written Claude answers on public-source cards.</td></tr>
+      <tr><td><code>RuntimeError: extraction backend is 'claude' but no ANTHROPIC_API_KEY is set</code></td><td>Set the key, or set <code>extraction.backend: local</code> in <code>configs/app.yaml</code> (free, extractive cards).</td></tr>
+      <tr><td><code>authentication</code> / <code>401</code> from Claude in paid steps</td><td>The key is wrong or not set in this process (section 3).</td></tr>
+      <tr><td><code>TransferLockError: X1 already ran</code></td><td>Intended. Re-run only with <code>transfer.run(force=True, reason="...")</code>.</td></tr>
+      <tr><td><code>RegistrationError: not evaluated on the gold set</code></td><td>Run notebook 09 for that run first.</td></tr>
+      <tr><td>Many cards rejected in the smoke test</td><td>Expected with placeholder labels (section 6).</td></tr>
+      <tr><td>Laptop slow during embeddings or slow tests</td><td><code>export OMP_NUM_THREADS=4 TOKENIZERS_PARALLELISM=false</code>; run the full sizes on Colab.</td></tr>
+      <tr><td>Colab disconnected</td><td>Outputs are on Drive; re-run the notebook. Stage 4b batches, extraction and inference resume where they stopped.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="section" id="checklist">
+    <h2>13. A-to-Z checklist</h2>
+    <ol>
+      <li>Install (section 1) and set the environment variables you need (section 3).</li>
+      <li><code>pytest</code>, <code>pytest -m slow</code>, <code>pytest -m network</code> all pass.</li>
+      <li><code>python scripts/smoke_test.py</code> ends with "SMOKE TEST PASSED"; open the dashboard on <code>smoke/</code> to see every tab working.</li>
+      <li>Approvals: supervisor sign-off, ethics approval, written consent from teammates.</li>
+      <li>Colab: Stage 2 dry run (<code>limit: 200</code>), then full collection.</li>
+      <li>Stage 3, fill the precision sheet; Stage 4, read the taxonomy coverage.</li>
+      <li>Stage 4b: gold sheets to both raters; weak labels after checking the cost estimate; noise check; κ ≥ 0.6 or revise the codebook once.</li>
+      <li>Stage 6, then 5; check the split report and token lengths.</li>
+      <li>Stage 7 baselines; Stage 8 M1, A1, A2, M2 on GPU; teacher T after its estimate.</li>
+      <li>Stage 9 evaluate; Stage 12 register; read the model card.</li>
+      <li>Stage 14 inference; check the knowledge-bearing share.</li>
+      <li>X1 locally, once, on consented and redacted own logs.</li>
+      <li>App: extract cards, build the store, try ask, handover, REST, MCP, dashboard.</li>
+      <li>App evaluation: card check, own-words questions, successor sessions, blind rating.</li>
+      <li>Write-up from <code>results_table.md</code>, <code>comparisons.json</code>, the model card, X1 and app evaluation outputs.</li>
+    </ol>
+  </section>
+</div>
+</body>
+</html>

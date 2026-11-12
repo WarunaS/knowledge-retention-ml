@@ -47,6 +47,13 @@ class Embedder:
         return v / np.maximum(n, 1e-12)
 
 
+def claude_credentials_set() -> bool:
+    """True if an Anthropic credential is in the environment (the SDK's usual sources)."""
+    import os
+
+    return any(os.environ.get(k) for k in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN"))
+
+
 def claude_client() -> Any:
     import anthropic
 

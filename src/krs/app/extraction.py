@@ -24,6 +24,7 @@ from typing import Any
 from krs.app.common import (
     app_config,
     claude_client,
+    claude_credentials_set,
     claude_text,
     cloud_allowed,
     content_words,
@@ -164,6 +165,9 @@ def extract_cards(predictions_path: str | Path, out_path: str | Path, cfg: dict[
         return p, local_card_fields(seg, list(p.knowledge_types)), "local"
 
     if ex.get("backend", "claude") == "claude" and client is None and any(cloud_allowed(segs[p.segment_id].conversation_id, cfg) for p in preds):
+        if not claude_credentials_set():
+            raise RuntimeError("extraction backend is 'claude' but no ANTHROPIC_API_KEY is set: set the key, "
+                               "or set extraction.backend: local in configs/app.yaml")
         client = claude_client()
     with open(out, "a", encoding="utf-8") as f_ok, open(rejected_path, "a", encoding="utf-8") as f_bad, \
             ThreadPoolExecutor(max_workers=ex.get("workers", 4)) as pool:

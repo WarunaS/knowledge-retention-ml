@@ -4,6 +4,8 @@ Trains and evaluates a classifier that finds knowledge-bearing segments in devel
 conversations and labels them by **technical domain** and **knowledge type**. Its output feeds
 knowledge-card extraction and a retrieval agent.
 
+Install, test, run and see results: [`docs/how_to_test.html`](docs/how_to_test.html). Smoke test: `python scripts/smoke_test.py`.
+
 Structured along the ML lifecycle - see [`docs/lifecycle.md`](docs/lifecycle.md).
 Problem statement: [`docs/01_problem.md`](docs/01_problem.md).
 

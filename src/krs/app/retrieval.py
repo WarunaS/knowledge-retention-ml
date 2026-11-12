@@ -44,7 +44,7 @@ def _matches(c: KnowledgeCard, f: dict[str, Any]) -> bool:
 
 
 def search(store: KnowledgeStore, query: str, k: int = 5, filters: dict[str, Any] | None = None,
-           expand: bool = False) -> list[Hit]:
+           expand: bool = False, max_expanded: int | None = None) -> list[Hit]:
     """Top-k cards for the query among cards passing the filters; expanded neighbours appended after."""
     filters = filters or {}
     cards = {c.card_id: c for c in store.all() if _matches(c, filters)}
@@ -55,9 +55,11 @@ def search(store: KnowledgeStore, query: str, k: int = 5, filters: dict[str, Any
     hits = [Hit(cards[cid], round(sims[cid], 4), "semantic") for cid in ranked]
     if expand:
         seen = set(ranked)
+        extra: list[Hit] = []
         for h in list(hits):
-            for n in sorted(store.neighbours(h.card.card_id)):
+            for n in sorted(store.neighbours(h.card.card_id), key=lambda cid: -sims.get(cid, 0.0)):
                 if n in cards and n not in seen:
                     seen.add(n)
-                    hits.append(Hit(cards[n], round(h.score * EXPANSION_WEIGHT, 4), f"graph:{h.card.card_id}"))
+                    extra.append(Hit(cards[n], round(h.score * EXPANSION_WEIGHT, 4), f"graph:{h.card.card_id}"))
+        hits += extra[: max_expanded if max_expanded is not None else k]  # at most k extra cards by default
     return hits
