@@ -513,16 +513,16 @@
         <div class="card">
           <h3>Extraction and retrieval</h3>
           <ul>
-            <li>Faithfulness of cards to source segments; human spot check</li>
-            <li>Recall@k and MRR on a hand-verified query set</li>
-            <li>Whether label filters improve retrieval over plain semantic search</li>
+            <li>Faithfulness of cards to source segments: automatic check on every card, plus a human spot check of 50 cards with a 95% interval</li>
+            <li>Recall@k and MRR on a hand-verified question set: questions written in the checker's own words (not card titles), every relevant card listed; 95% bootstrap CIs</li>
+            <li>Whether label filters improve retrieval over plain semantic search (paired difference in MRR with CI); graph expansion reported as extra context, since it is appended after the top results</li>
           </ul>
         </div>
         <div class="card">
           <h3>Successor usefulness</h3>
           <ul>
-            <li>Participants answer questions about unfamiliar work with and without cards</li>
-            <li>Answer quality rated blind; time to answer recorded</li>
+            <li>Participants answer questions about unfamiliar work with and without the knowledge system (raw logs only), counterbalanced so every question is answered in both conditions</li>
+            <li>Answer quality rated blind on a 1–5 rubric (answers shuffled, condition hidden); time to answer recorded; compared within participants with a Wilcoxon signed-rank test</li>
             <li>Small sample, reported as indicative</li>
           </ul>
         </div>
