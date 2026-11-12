@@ -47,6 +47,10 @@ class Paths:
         return self.root / "features"
 
     @property
+    def predictions(self) -> Path:  # stage 14 output: Prediction records per model version
+        return self.root / "predictions"
+
+    @property
     def manifest(self) -> Path:
         return self.raw / "manifest.json"
 

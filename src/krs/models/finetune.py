@@ -46,14 +46,15 @@ def encode(tokenizer: Any, text: str, context: str, max_length: int = 512) -> li
     return [cls, *ctx_ids, sep, *text_ids, sep]
 
 
-def _build_model(name: str, n_kt: int, n_dom: int, dropout: float):
+def _build_model(name: str, n_kt: int, n_dom: int, dropout: float, pretrained: bool = True):
+    """pretrained=False builds the architecture from the config only (inference loads its own weights)."""
     import torch
-    from transformers import AutoModel
+    from transformers import AutoConfig, AutoModel
 
     class TwoHeadClassifier(torch.nn.Module):
         def __init__(self) -> None:
             super().__init__()
-            self.encoder = AutoModel.from_pretrained(name)
+            self.encoder = AutoModel.from_pretrained(name) if pretrained else AutoModel.from_config(AutoConfig.from_pretrained(name))
             hidden = self.encoder.config.hidden_size
             self.drop = torch.nn.Dropout(dropout)
             self.head_kt = torch.nn.Linear(hidden, n_kt)

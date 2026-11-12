@@ -186,6 +186,9 @@ class Prediction(BaseModel):
     domain_probs: dict[Domain, float]
     knowledge_type_probs: dict[KnowledgeType, float]
     knowledge_bearing: bool
+    # decided labels (per-label thresholds + codebook rules); extraction picks the card template from these
+    knowledge_types: list[KnowledgeType] = Field(default_factory=list)
+    domains: list[Domain] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=_now)
 
 

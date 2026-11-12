@@ -238,8 +238,8 @@
           <ul>
             <li>Versioned weights, config, thresholds, validation and gold metrics, and a model card generated from the gold results; registration chooses the model on validation and is refused for runs not evaluated on gold</li>
             <li>Every run records its git commit, library versions and data fingerprints, and an index lists all runs</li>
-            <li>Service loads the registered model and scores segments on CPU</li>
-            <li>Emits per-label probabilities and a knowledge-bearing flag</li>
+            <li>Service loads the registered model and scores segments on CPU in resumable batches, for every model type (linear baselines and the fine-tuned transformer)</li>
+            <li>Emits per-label probabilities, the decided labels and a knowledge-bearing flag, plus speed per 1,000 segments for the comparison with the teacher</li>
           </ul>
         </div>
         <div class="card">

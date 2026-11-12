@@ -231,7 +231,7 @@
           <h3>4.5 Model registry and serving layer</h3>
           <ul>
             <li>Versioned weights, training config, metrics and model card</li>
-            <li>Classification service loads the selected model and scores segments with calibrated probabilities</li>
+            <li>Classification service loads the registered model and scores segments with per-label probabilities and thresholds tuned on validation</li>
             <li>Runs on CPU; no cloud call at inference time</li>
           </ul>
         </div>

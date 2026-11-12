@@ -1,0 +1,5 @@
+# Stage 14 - offline batch inference with the registered model. Output: data/predictions/<version>.jsonl
+version: null        # null = the current registered version (models/registry.json)
+device: cpu          # the plan's claim: classification runs locally without a GPU or a cloud call
+batch_size: 64
+sources: null        # null = every file in data/segments/; or a list, e.g. [own_logs]

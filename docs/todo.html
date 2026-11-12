@@ -46,12 +46,12 @@
     <header class="header">
       <h1>Implementation To-Do List</h1>
       <p class="subtitle">knowledge-retention-ml · code still to build, in ML lifecycle order</p>
-      <p class="meta">Updated 12 November 2026 (Stages 11–12) · Matches plan v2.1 (research_project_plan, research_architecture_plan, research_technical_plan)</p>
+      <p class="meta">Updated 12 November 2026 (Stage 14) · Matches plan v2.1 (research_project_plan, research_architecture_plan, research_technical_plan)</p>
     </header>
 
     <section class="section">
       <h2>1. Code to build</h2>
-      <p>Done so far: <code>schema.py</code>, <code>label/taxonomy.py</code>, <code>config.py</code>, <code>io.py</code>, Stages 2 (Collect), 3 (Clean), 4 (Explore), 4b (Label code), 6 (Split), 5 (Features), 7–8 (Models), 9 (Evaluate), 11–12 (Track/Register) and their tests. Rows marked ⬜ are still stubs.</p>
+      <p>Done so far: <code>schema.py</code>, <code>label/taxonomy.py</code>, <code>config.py</code>, <code>io.py</code>, Stages 2 (Collect), 3 (Clean), 4 (Explore), 4b (Label code), 6 (Split), 5 (Features), 7–8 (Models), 9 (Evaluate), 11–12 (Track/Register), 14 (Inference) and their tests. Rows marked ⬜ are still stubs.</p>
       <div class="table-wrap">
         <table class="tbl">
           <thead><tr><th style="width:22%">Stage</th><th>Files</th><th style="width:10%">Status</th></tr></thead>
@@ -65,8 +65,8 @@
             <tr class="next"><td>7–8 Models</td><td>baselines, finetune, setfit_run, teacher <span class="add">(includes 10 Tune, ablations A1 and A2)</span><br><small>Code done 11 Nov: B0/B1/B2 (C and thresholds tuned on validation), M1 DeBERTa with two heads and context-first cutting, A1, A2 learning curve, M2 SetFit cross-fitted on gold (plan fixed: no training on test rows), T Claude teacher (dry-run estimate unless confirm=True), runner + run configs, notebooks 07/08, 14 new tests incl. real fine-tune and SetFit code with tiny models. Real training runs on Colab GPU once labels exist.</small></td><td class="status">✅</td></tr>
             <tr><td>9 Evaluate</td><td>metrics, stats<br><small>Done 12 Nov: gold-only macro-F1 per axis with conversation-bootstrap 95% CIs, micro-F1, exact match, knowledge-bearing F1, per-label P/R/F1, per-source scores, paired bootstrap for H1/H3, non-inferiority for H2, label confusion heatmaps, learning-curve plot, results table (CSV + Markdown), notebook 09, 8 new tests. Real-size run: 400 segments, 1,000 resamples in 1.8 s.</small></td><td class="status">✅</td></tr>
             <tr class="next"><td>11–12 Track/Register</td><td>tracking.py, registry.py <span class="add">(+ model card)</span><br><small>Done 12 Nov: run_info.json per run (git commit, uncommitted flag, versions, data fingerprints), runs index, best model chosen on validation, registration refused without a gold evaluation, versioned folders with model card and registry.json; baselines now save their fitted models; notebook 12, 5 new tests (a reloaded model reproduces its predictions). Real-data run in 4 s.</small></td><td class="status">✅</td></tr>
-            <tr class="next"><td>14 Inference</td><td>inference.py</td><td class="status">⬜<span class="tag">next</span></td></tr>
-            <tr><td>Drift check (X1)</td><td>evaluate/transfer.py</td><td class="status">⬜</td></tr>
+            <tr><td>14 Inference</td><td>inference.py<br><small>Done 12 Nov: loads the current registered model (majority, TF-IDF + LR, embeddings + LR or fine-tuned DeBERTa), scores segments on CPU in resumable batches, writes predictions with probabilities, decided labels and the knowledge-bearing flag, report with speed per 1,000 segments; notebook 14, 4 new tests (inference reproduces training probabilities for every model type). Real run: 1,152 segments in 8.7 s on a laptop CPU, $0.</small></td><td class="status">✅</td></tr>
+            <tr class="next"><td>Drift check (X1)</td><td>evaluate/transfer.py</td><td class="status">⬜<span class="tag">next</span></td></tr>
             <tr><td>App</td><td>extraction, storage, retrieval, agent, mcp_server, handover</td><td class="status">⬜</td></tr>
             <tr><td>App evaluation</td><td>retrieval eval (Recall@k, MRR), successor task</td><td class="status">⬜</td></tr>
             <tr class="optional"><td>(optional)</td><td>Streamlit knowledge map</td><td class="status">⬜</td></tr>
