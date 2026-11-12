@@ -63,6 +63,22 @@ def paired_bootstrap(y: np.ndarray, yhat_a: np.ndarray, yhat_b: np.ndarray, grou
             "ci_low": round(float(lo), 4), "ci_high": round(float(hi), 4), "p_value": round(float(min(p, 1.0)), 4)}
 
 
+def unpaired_bootstrap_diff(y1: np.ndarray, yhat1: np.ndarray, g1: np.ndarray, y2: np.ndarray, yhat2: np.ndarray,
+                            g2: np.ndarray, n: int = 1000, seed: int = 42, alpha: float = 0.05) -> dict[str, float]:
+    """Difference set1 - set2 in macro-F1 for two independent test sets (e.g. gold vs transfer), each
+    resampled by its own conversations. Labels: those present in either set."""
+    y1, yhat1, y2, yhat2 = (m.astype(np.int64) for m in (y1, yhat1, y2, yhat2))
+    labels = np.where((y1.sum(0) + y2.sum(0)) > 0)[0]
+    rng = np.random.default_rng(seed)
+    diffs = []
+    for _ in range(n):
+        i, j = _resample_index(g1, rng), _resample_index(g2, rng)
+        diffs.append(macro_f1_fixed(y1[i], yhat1[i], labels) - macro_f1_fixed(y2[j], yhat2[j], labels))
+    lo, hi = np.percentile(diffs, [100 * alpha / 2, 100 * (1 - alpha / 2)])
+    return {"diff": round(macro_f1_fixed(y1, yhat1, labels) - macro_f1_fixed(y2, yhat2, labels), 4),
+            "ci_low": round(float(lo), 4), "ci_high": round(float(hi), 4)}
+
+
 def within_margin(paired: dict[str, Any], margin: float = 0.05) -> bool:
     """Non-inferiority for H2: with A = model, B = teacher, A is within `margin` of B if the lower CI
     bound of A - B is above -margin."""

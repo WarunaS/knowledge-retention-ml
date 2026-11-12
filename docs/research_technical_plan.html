@@ -272,7 +272,8 @@
           <ul>
             <li>Consented sample of team members' Claude Code, Cursor or Copilot logs</li>
             <li>Secrets and personal data redacted; one to two hundred segments hand-labelled</li>
-            <li>Final registered model scored once; macro-F1 drop reported</li>
+            <li>Final registered model scored once, enforced by a lock: a re-run needs a written reason and is recorded</li>
+            <li>Macro-F1 drop reported with a 95% CI against the whole gold set and against its agentic part (own logs are agent sessions); per-label F1, label-frequency and length shift; the report holds ids and numbers only</li>
           </ul>
         </div>
         <div class="card">

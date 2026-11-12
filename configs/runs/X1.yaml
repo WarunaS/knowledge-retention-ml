@@ -1,5 +1,8 @@
 run_id: X1
 model: registered_final
-purpose: Transfer test on own logs (run once)
+purpose: Transfer test - current registered model on hand-labelled, consented, redacted own logs (runs once)
 hypothesis: RQ3
+model_version: null      # null = the current registered version
+bootstrap_n: 1000
 seed: 42
+transfer_sample: 150     # own-log segments to hand-label (plan: 100-200)
