@@ -1,5 +1,7 @@
 run_id: B1
 model: tfidf_lr
-purpose: Lexical baseline
+purpose: Lexical baseline - TF-IDF + one logistic regression per label
 hypothesis: H1
+with_context: true
+C_grid: [0.1, 1.0, 10.0]   # chosen on validation (Stage 10)
 seed: 42

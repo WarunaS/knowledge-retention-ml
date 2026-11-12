@@ -18,4 +18,5 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .ipynb_checkpoints/
+checkpoints/
 .DS_Store

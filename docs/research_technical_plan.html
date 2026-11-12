@@ -373,14 +373,14 @@
           <tr><td>B1</td><td>TF-IDF + logistic regression</td><td>Lexical baseline</td><td>H1</td></tr>
           <tr><td>B2</td><td>MiniLM embeddings + logistic regression</td><td>Embedding baseline</td><td>H1</td></tr>
           <tr><td>M1</td><td>DeBERTa-v3-small fine-tuned on weak labels, two multi-label heads</td><td>Main model</td><td>H1, H2</td></tr>
-          <tr><td>M2</td><td>SetFit trained on fifty gold examples per class</td><td>How little human labelling is enough</td><td>Labelling budget</td></tr>
-          <tr><td>T</td><td>LLM zero-shot on the gold set</td><td>Teacher ceiling, plus cost and latency per thousand segments</td><td>H2</td></tr>
+          <tr><td>M2</td><td>SetFit on up to fifty gold examples per class, cross-fitted: five conversation folds of the gold set, each predicted by a model trained on the other folds</td><td>How little human labelling is enough</td><td>Labelling budget</td></tr>
+          <tr><td>T</td><td>Claude Opus 5.5 zero-shot on the gold set with the codebook</td><td>Teacher ceiling, plus cost and latency per thousand segments</td><td>H2</td></tr>
           <tr><td>A1</td><td>M1 without the context turn</td><td>Ablation</td><td>H3</td></tr>
           <tr><td>A2</td><td>M1 trained on 1k, 2k, 5k and 10k segments</td><td>Learning curve</td><td>Labelling budget</td></tr>
           <tr><td>X1</td><td>Final M1 on consented own logs</td><td>Transfer gap</td><td>RQ3</td></tr>
         </tbody>
       </table>
-      <p style="margin-top:10px">Metrics: macro-F1 and per-class precision and recall on the gold set, confusion matrices, bootstrap 95% confidence intervals over segments, and a paired test between M1 and B2. Model selection uses the weak-label validation split; reported numbers come only from the gold set.</p>
+      <p style="margin-top:10px">Metrics: macro-F1 and per-class precision and recall on the gold set, confusion matrices, bootstrap 95% confidence intervals over segments, and a paired test between M1 and B2. Model selection uses the weak-label validation split; reported numbers come only from the gold set. Tuning (Stage 10) is done on validation only: the regularisation strength of the baselines, the best epoch of M1, and one decision threshold per label; predicted labels follow the codebook rules (none alone, at least one label per axis).</p>
     </section>
 
     <section class="section">

@@ -1,5 +1,6 @@
 run_id: B0
 model: majority
-purpose: Floor
-hypothesis: -
+purpose: Floor - predicts each label's training frequency
+hypothesis: '-'
+with_context: true
 seed: 42

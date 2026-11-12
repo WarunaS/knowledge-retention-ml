@@ -1,5 +1,12 @@
 run_id: M2
 model: setfit
-purpose: Labelling budget (50 gold/class)
-hypothesis: budget
+purpose: Few-shot - how little human labelling is enough (cross-fitted on gold, never trained on a predicted segment)
+hypothesis: labelling budget
+base_model: sentence-transformers/all-MiniLM-L6-v2
+with_context: true
+folds: 5                 # by conversation
+n_per_class: 50
+num_iterations: 20
+num_epochs: 1
+batch_size: 16
 seed: 42

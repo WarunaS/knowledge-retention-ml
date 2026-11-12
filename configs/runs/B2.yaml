@@ -1,5 +1,7 @@
 run_id: B2
 model: minilm_lr
-purpose: Embedding baseline
+purpose: Embedding baseline - MiniLM sentence embeddings + logistic regression
 hypothesis: H1
+with_context: true
+C_grid: [0.1, 1.0, 10.0]
 seed: 42

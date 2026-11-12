@@ -1,6 +1,18 @@
 run_id: A1
-model: deberta_v3_small
-purpose: Ablation: no context turn
+model: deberta
+purpose: Ablation - M1 without the context turn
 hypothesis: H3
-seed: 42
+base_model: microsoft/deberta-v3-small
 with_context: false
+max_length: 512          # context is cut first, the segment is kept
+epochs: 3
+lr: 3.0e-5
+batch_size: 16
+warmup: 0.06
+weight_decay: 0.01
+dropout: 0.1
+pos_weight: true         # rare labels weigh more (capped)
+pos_weight_cap: 10.0
+fp16: true               # on GPU
+save_model: false
+seed: 42

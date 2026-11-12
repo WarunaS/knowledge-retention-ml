@@ -1,6 +1,19 @@
 run_id: A2
-model: deberta_v3_small
-purpose: Learning curve 1k/2k/5k/10k
-hypothesis: budget
+model: deberta
+purpose: Learning curve - M1 trained on 1k, 2k, 5k and 10k segments
+hypothesis: labelling budget
+base_model: microsoft/deberta-v3-small
+with_context: true
+max_length: 512          # context is cut first, the segment is kept
+epochs: 3
+lr: 3.0e-5
+batch_size: 16
+warmup: 0.06
+weight_decay: 0.01
+dropout: 0.1
+pos_weight: true         # rare labels weigh more (capped)
+pos_weight_cap: 10.0
+fp16: true               # on GPU
+save_model: false
 seed: 42
 train_sizes: [1000, 2000, 5000, 10000]

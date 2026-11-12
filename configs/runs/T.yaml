@@ -1,5 +1,9 @@
 run_id: T
-model: llm_zero_shot
-purpose: Teacher ceiling + cost/latency
+model: llm_teacher
+purpose: Teacher ceiling on the gold set, plus cost and latency per 1,000 segments (costs money - confirm=True)
 hypothesis: H2
+llm:
+  mode: sync
+  workers: 4
+  fallbacks: true
 seed: 42
